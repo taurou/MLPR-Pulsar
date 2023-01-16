@@ -1,4 +1,4 @@
-import Lab3_PCA as PCA
+import PCA as PCA
 import numpy
 
 
