@@ -1,8 +1,7 @@
 import numpy as np
 import scipy.special
-import lib
+import function_lib.lib as lib
 import matplotlib.pyplot as plt
-import MVG as MVG
 
 #TODO fix scores e llratio è la stessa cosa. llratio è lo score del classificatore.
 
@@ -101,7 +100,7 @@ def BayesErrorPlots(eval_L, llratio, range_start = -3, range_end = 3, num_points
 
 
 if __name__ == "__main__":
-    D, L = lib.load_iris()
+    '''D, L = lib.load_iris()
     (train_D, train_L), (eval_D, eval_L) = lib.split_db_2to1(D,L)
     prior = lib.vcol(np.array([1.0/3.0, 1.0/3.0, 1.0/3.0]))
     IRISMVGprediction = MVG.logMVG(train_D, train_L, eval_D, eval_L, prior)
@@ -170,3 +169,4 @@ if __name__ == "__main__":
     #plot bayes errors
     BayesErrorPlots(eval_L, llratio)
         
+'''

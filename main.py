@@ -5,6 +5,8 @@ import function_lib.plots as plots
 from scipy.stats import norm #TODO remove if I move gaussianize func
 import math
 import function_lib.PCA as PCA
+import function_lib.MVG as MVG
+import function_lib.model_eval as model_eval
 
 def load(fname):
     DList = []
@@ -95,7 +97,6 @@ def KfoldsGenerator(D, L, k, seed=0): #passing the classifier function
 
 if __name__ == "__main__":
     DTR, LTR = load("dataset/Train.txt")
-    print("hello")
     # plots.plot_hist(DTR,LTR, "raw dataset", "plots/1_RawDataset", True)
     # DTR_gau = gaussianize(DTR)
     # plots.plot_hist(DTR_gau,LTR, "gaussianised dataset" , "plots/2_GaussianizedDataset", True)
@@ -109,4 +110,24 @@ if __name__ == "__main__":
     #Create the K-folds 
     k = 5 #num of folds
     singleNOPCA, singlePCA5, singlePCA6, singlePCA7, kNOPCA, kPCA5, kPCA6, kPCA7 = KfoldsGenerator(DTR_z,LTR, k)
+
+    prior_0 = np.array([0.5, 0.9, 0.1])
+    prior_1 = np.array([0.5, 0.1, 0.9])
+    prior = np.vstack([prior_0, prior_1])
+    
+
+    (DTR, LTR), (DTE, LTE) = singleNOPCA
+
+    pred_L, llr = MVG.logMVG(DTR,LTR, DTE, LTE, prior[:,0:0+1])
+
+
+
+
+
+
+
+
+
+
+
     print("ciao")
