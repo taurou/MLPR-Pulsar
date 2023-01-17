@@ -14,8 +14,6 @@ def logpdf_GAU_ND(x, mu, c):
     return_val = [ const - 0.5*np.dot( np.dot((x[:,i:i+1]-mu).T, c_inv), x[:,i:i+1]-mu) for i in range (x.shape[1]) ]
     return np.array(return_val).ravel()
 
-
-
 def compute_Mean_CovMatr(D):
     mu = D.mean(1)
     mu = mu.reshape((mu.size,1))
@@ -149,14 +147,4 @@ def logNaiveBayes(train_D, train_L, eval_D, eval_L, prior):
     mu_C = compute_Mean_CovMatr_perClass(train_D, train_L, diagonal=True)
     return MVG_basePredictor(eval_D, eval_L, mu_C, prior)
 
-
-if __name__ == '__main__':
-    D, L = lib.load_iris()
-    (train_D, train_L), (eval_D, eval_L) = lib.split_db_2to1(D, L)
-
-    prior = lib.vcol(np.array([1.0/3.0, 1.0/3.0, 1.0/3.0]))
-    logMVG(train_D, train_L, eval_D, eval_L, prior)
-    logNaiveBayes(train_D, train_L, eval_D, eval_L, prior)
-    TiedCovariance_logMVG(train_D, train_L, eval_D, eval_L, prior)
-    TiedCovariance_logNB(train_D, train_L, eval_D, eval_L, prior)
 
