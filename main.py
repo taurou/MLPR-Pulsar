@@ -10,7 +10,7 @@ import function_lib.LR as LR
 import function_lib.model_eval as model_eval
 import matplotlib.pyplot as plt
 
-
+######## DATA LOADING AND PREPARATION ########
 def load(fname):
     DList = []
     labelsList = []
@@ -113,6 +113,8 @@ def KfoldsGenerator(D, L, k, seed=0): #passing the classifier function
     
     return (singleNOPCA, singlePCA5, singlePCA6, singlePCA7) , (NOPCA, PCA5, PCA6, PCA7)
 
+######## MVG ########
+
 def MVGwrapper(data, prior, mode, k = 0):
 
     if(mode != "k-fold" and mode != "single-fold"):
@@ -178,6 +180,7 @@ def kfoldMVG(kfold_data, prior, MVGmodel):
             print("[K-Fold %s] prior-1 = %.1f minDCF = %.3f," % (labels[i], prior_class1, minDCF) )
 
 
+######## LINEAR REGRESSION ########
 def kfoldLR_minDCF(kfold_data, pi_t, l ): #kfold_data takes only one foldtype. e.g. only PCA5. Not the whole array. 
 
 
@@ -198,7 +201,7 @@ def kfoldLR_minDCF(kfold_data, pi_t, l ): #kfold_data takes only one foldtype. e
 
 
 def plotLR_lambda_minDCF(kfold_data, prior_t, mode = "k-fold"):
-    l = np.logspace(-5, 2, num = 20) #limiting the number of points by 50.
+    l = np.logspace(-5, 1, num = 15) #limiting the number of points by 50.
     minDCF_array = []
     for lamb in l:
         minDCF_prior = []
@@ -210,8 +213,12 @@ def plotLR_lambda_minDCF(kfold_data, prior_t, mode = "k-fold"):
     print("plotting %d-fold" %(kfold_data[0][0][0].shape[0]))
     plots.plotminDCF(l,minDCF_array, prior_t, "lambda")
     
-
-
+def computeLR_minDCF(kfold_data, prior_t, l, mode = "k-fold"):
+    for pi_t in prior_t:
+        minDCF = kfoldLR_minDCF(kfold_data, pi_t, l)
+        print("[linear-LR] - lambda: %f prior_T: %.1f minDCF: %.3f" % (l, pi_t, minDCF))
+    
+######## SVM ########
 
 
 
