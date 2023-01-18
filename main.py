@@ -69,11 +69,19 @@ def KfoldsGenerator(D, L, k, seed=0): #passing the classifier function
     train_size = int(math.ceil((D.shape[1]*0.66)))
     idxSTrain = idx[0:train_size]
     idxSTest = idx[train_size:]
+    DTR = D[:,idxSTrain]
+    LTR = L[idxSTrain]
+    DTE = D[:,idxSTest]
+    LTE = L[idxSTest]
 
-    singleNOPCA = ((D[:,idxSTrain], L[idxSTrain]),(D[:,idxSTest], L[idxSTest]))
-    singlePCA5 = ((D_PCA5[:,idxSTrain], L[idxSTrain]),(D_PCA5[:,idxSTest], L[idxSTest]))
-    singlePCA6 = ((D_PCA6[:,idxSTrain], L[idxSTrain]),(D_PCA6[:,idxSTest], L[idxSTest])) 
-    singlePCA7 = ((D_PCA7[:,idxSTrain], L[idxSTrain]),(D_PCA7[:,idxSTest], L[idxSTest])) 
+    singleNOPCA = ((DTR, LTR),(DTE, LTE))
+
+    DTR_PCA, DTE_PCA = PCA.compute_PCA(5,DTR,DTE)
+    singlePCA5 = ((DTR_PCA,LTR),(DTE_PCA, LTE))
+    DTR_PCA, DTE_PCA = PCA.compute_PCA(6,DTR,DTE) 
+    singlePCA6 = ((DTR_PCA,LTR),(DTE_PCA, LTE))
+    DTR_PCA, DTE_PCA = PCA.compute_PCA(7,DTR,DTE)
+    singlePCA7 = ((DTR_PCA,LTR),(DTE_PCA, LTE)) 
     
 
     #Preparing K-Folds dataset
@@ -88,10 +96,17 @@ def KfoldsGenerator(D, L, k, seed=0): #passing the classifier function
     for i in range(k):
         idxTest = idx[i*group_size:(i*group_size + group_size)]
         idxTrain = [i for i in idx if i not in set(idxTest)]
-        NOPCA.append(((D[:,idxTrain], L[idxTrain]), (D[:,idxTest], L[idxTest])))
-        PCA5.append(((D_PCA5[:,idxTrain], L[idxTrain]), (D_PCA5[:,idxTest], L[idxTest]))) 
-        PCA6.append(((D_PCA6[:,idxTrain], L[idxTrain]), (D_PCA6[:,idxTest], L[idxTest])))
-        PCA7.append(((D_PCA7[:,idxTrain], L[idxTrain]), (D_PCA7[:,idxTest], L[idxTest])))
+        DTR = D[:,idxTrain]
+        LTR = L[idxTrain]
+        DTE = D[:,idxTest]
+        LTE = L[idxTest]
+        NOPCA.append(((DTR, LTR), (DTE, LTE)))
+        DTR_PCA, DTE_PCA = PCA.compute_PCA(5,DTR,DTE)
+        PCA5.append(((DTR_PCA, LTR), (DTE_PCA, LTE))) 
+        DTR_PCA, DTE_PCA = PCA.compute_PCA(6,DTR,DTE)
+        PCA6.append(((DTR_PCA, LTR), (DTE_PCA, LTE))) 
+        DTR_PCA, DTE_PCA = PCA.compute_PCA(7,DTR,DTE)
+        PCA7.append(((DTR_PCA, LTR), (DTE_PCA, LTE))) 
     
     return (singleNOPCA, singlePCA5, singlePCA6, singlePCA7) , (NOPCA, PCA5, PCA6, PCA7)
 
@@ -180,15 +195,7 @@ if __name__ == "__main__":
     prior_1 = np.array([0.5, 0.1, 0.9])
     prior = np.vstack([prior_0, prior_1])
     
-    '''
-    (DTR, LTR), (DTE, LTE) = singleNOPCA
-
-    pred_L, llr = MVG.logMVG(DTR,LTR, DTE, LTE, prior[:,0:0+1])
-    minDCF = model_eval.compute_min_Normalized_DCF(LTE, llr, 0.9, C_fn = 1 , C_fp =  1)
-    print("minDCF=", minDCF)
-
-    '''
-    #MVGwrapper(singleFoldData, prior, mode = "single-fold")
+    MVGwrapper(singleFoldData, prior, mode = "single-fold")
     MVGwrapper(kFoldData, prior, mode = "k-fold", k = k)
     
 

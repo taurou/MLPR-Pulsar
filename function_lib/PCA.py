@@ -20,4 +20,4 @@ def compute_PCA(m, DTR, DTE = None):    #computing the covariance matrix
         return DTR_PCA
     else:
         DTE_PCA = np.dot(P.T, DTE)
-        return DTE_PCA #if we're considering the evaluation set, return only the eval data on which PCA was performed
+        return DTR_PCA, DTE_PCA #if we're considering the evaluation set, return also the eval data on which PCA was performed
