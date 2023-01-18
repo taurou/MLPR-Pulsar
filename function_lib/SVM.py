@@ -3,10 +3,11 @@ import matplotlib.pyplot as plt
 import lib
 import scipy.optimize
 class SVMClass:
-    def __init__(self, DTR, LTR, kernelType, k, c = 0.0, d = 0.0, gamma = 0.0): #K is basically the same as before but we add power of 2 of it at the kernel.
+    def __init__(self, DTR, LTR, kernelType, k, pi_t = 0.0, c = 0.0, d = 0.0, gamma = 0.0): #K is basically the same as before but we add power of 2 of it at the kernel.
         self.kernelType = kernelType
         self.c = c
         self.d = d
+        self.pi_t = pi_t
         self.gamma = gamma
         self.k = k
         self.X_linear = -1
@@ -72,7 +73,11 @@ class SVMClass:
         return J_primal - J_dual
 
     def generate_C_intervals(self, C): #generates the list with intervals (0,C)
-        list = [(0,C) for i in range(self.LTR.size)]
+        list = np.array([(0,C) for i in range(self.LTR.size)])
+        if(self.pi_t > 0): #balanced SVM
+            emp_pi_t = LTR[LTR==1].shape[0]
+            list[self.LTR == 1] = (0, (C*self.pi_t)/emp_pi_t)
+            list[self.LTR == 0] = (0, (C*(1-self.pi_t)/(1-emp_pi_t)))
         return list
 
     def compute_scores(self, alpha, DTE):
