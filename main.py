@@ -61,7 +61,7 @@ def KfoldsGenerator(D, L, k, seed=0): #passing the classifier function
     idx = np.random.permutation(D.shape[1]) #randomizes the order of the data
     #TODO check if I have to apply PCA only on Training fold.
     #applying PCA
-    D_PCA5 = PCA.compute_PCA(5,D)
+    D_PCA5 = PCA.compute_PCA(5,D) #TODO check se applicare PCA a TRAINING e a EVAL separatamente
     D_PCA6 = PCA.compute_PCA(6,D)
     D_PCA7 = PCA.compute_PCA(7,D)
 
@@ -174,7 +174,7 @@ if __name__ == "__main__":
 
     #Create the K-folds 
     k = 5 #num of folds
-    singleFoldData, kFoldData = KfoldsGenerator(DTR_z,LTR, k)
+    singleFoldData, kFoldData = (singleNOPCA, singlePCA5, singlePCA6, singlePCA7) , (NOPCA, PCA5, PCA6, PCA7) = KfoldsGenerator(DTR_z,LTR, k)
 
     prior_0 = np.array([0.5, 0.9, 0.1])
     prior_1 = np.array([0.5, 0.1, 0.9])
