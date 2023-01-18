@@ -6,7 +6,10 @@ from scipy.stats import norm #TODO remove if I move gaussianize func
 import math
 import function_lib.PCA as PCA
 import function_lib.MVG as MVG
+import function_lib.LR as LR
 import function_lib.model_eval as model_eval
+import matplotlib.pyplot as plt
+
 
 def load(fname):
     DList = []
@@ -172,7 +175,47 @@ def kfoldMVG(kfold_data, prior, MVGmodel):
             kscores_array = np.concatenate(K_scores).ravel() #computing all the scores for all the folds and then putting them in one single array. Same for the labels.
             kLTE_array = np.concatenate(K_LTE).ravel()
             minDCF = model_eval.compute_min_Normalized_DCF(kLTE_array, kscores_array, prior_class1, C_fn = 1 , C_fp =  1)
-            print("[Single Fold %s] prior-1 = %.1f minDCF = %.3f," % (labels[i], prior_class1, minDCF) )
+            print("[K-Fold %s] prior-1 = %.1f minDCF = %.3f," % (labels[i], prior_class1, minDCF) )
+
+
+def kfoldLR_minDCF(kfold_data, pi_t, l ): #kfold_data takes only one foldtype. e.g. only PCA5. Not the whole array. 
+
+
+    K_scores = []
+    K_LTE = []
+    for fold in kfold_data:
+        (DTRk, LTRk),(DTEk, LTEk) = fold
+
+        pred_L, llr = LR.computeLR(DTRk, LTRk, DTEk , l, pi_t) #TODO lambda handling
+        K_scores.append(llr)
+        K_LTE.append(LTEk)
+    kscores_array = np.concatenate(K_scores).ravel() #computing all the scores for all the folds and then putting them in one single array. Same for the labels.
+    kLTE_array = np.concatenate(K_LTE).ravel()
+    minDCF = model_eval.compute_min_Normalized_DCF(kLTE_array, kscores_array, pi_t, C_fn = 1 , C_fp =  1)
+    #print("[lin-LR] lambda = prior_T = %.1f minDCF = %.3f," % (l, pi_t, minDCF) )
+    #TODO FIX PRINT
+    return minDCF
+
+
+def plotLRminDCF(kfold_data, prior_t, mode = "k-fold"):
+    print("a)")
+    l = np.logspace(-5, 2, num = 20) #limiting the number of points by 50.
+    minDCF_array = []
+    for lamb in l:
+        minDCF_prior = []
+        for pi_t in prior_t:
+            minDCF = kfoldLR_minDCF(kfold_data, pi_t, lamb)
+            minDCF_prior.append(minDCF)
+        minDCF_array.append(minDCF_prior) #should result an array of type [ [minDCF-pi_T0, minDCF-pi_T1, minDCF-pi_T2] ...   ]
+    
+
+    plots.plotminDCF(l,minDCF_array, prior_t, "lambda")
+
+    print("prova")
+    
+
+
+
 
 
 if __name__ == "__main__":
@@ -191,15 +234,19 @@ if __name__ == "__main__":
     k = 5 #num of folds
     singleFoldData, kFoldData = (singleNOPCA, singlePCA5, singlePCA6, singlePCA7) , (NOPCA, PCA5, PCA6, PCA7) = KfoldsGenerator(DTR_z,LTR, k)
 
-    prior_0 = np.array([0.5, 0.9, 0.1])
-    prior_1 = np.array([0.5, 0.1, 0.9])
-    prior = np.vstack([prior_0, prior_1])
-    
-    MVGwrapper(singleFoldData, prior, mode = "single-fold")
-    MVGwrapper(kFoldData, prior, mode = "k-fold", k = k)
+    prior_f = np.array([0.5, 0.9, 0.1])
+    prior_t = np.array([0.5, 0.1, 0.9])
+    prior = np.vstack([prior_f, prior_t])
     
 
 
+
+    #MVGwrapper(singleFoldData, prior, mode = "single-fold")
+    #MVGwrapper(kFoldData, prior, mode = "k-fold", k = k)
+    
+
+
+    plotLRminDCF(PCA5, prior_t)
 
 
 
