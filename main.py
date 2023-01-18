@@ -198,7 +198,6 @@ def kfoldLR_minDCF(kfold_data, pi_t, l ): #kfold_data takes only one foldtype. e
 
 
 def plotLR_lambda_minDCF(kfold_data, prior_t, mode = "k-fold"):
-    print("a)")
     l = np.logspace(-5, 2, num = 20) #limiting the number of points by 50.
     minDCF_array = []
     for lamb in l:
