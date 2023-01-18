@@ -197,7 +197,7 @@ def kfoldLR_minDCF(kfold_data, pi_t, l ): #kfold_data takes only one foldtype. e
     return minDCF
 
 
-def plotLRminDCF(kfold_data, prior_t, mode = "k-fold"):
+def plotLR_lambda_minDCF(kfold_data, prior_t, mode = "k-fold"):
     print("a)")
     l = np.logspace(-5, 2, num = 20) #limiting the number of points by 50.
     minDCF_array = []
@@ -210,8 +210,6 @@ def plotLRminDCF(kfold_data, prior_t, mode = "k-fold"):
     
     print("plotting %d-fold" %(kfold_data[0][0][0].shape[0]))
     plots.plotminDCF(l,minDCF_array, prior_t, "lambda")
-
-    print("prova")
     
 
 
@@ -245,8 +243,8 @@ if __name__ == "__main__":
     #MVGwrapper(kFoldData, prior, mode = "k-fold", k = k)
     
 
-    plotLRminDCF(PCA7, prior_t)
-    plotLRminDCF(NOPCA, prior_t)
+    plotLR_lambda_minDCF(PCA7, prior_t)
+    plotLR_lambda_minDCF(NOPCA, prior_t)
 
 
 
