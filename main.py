@@ -186,7 +186,7 @@ def kfoldLR_minDCF(kfold_data, pi_t, l ): #kfold_data takes only one foldtype. e
     for fold in kfold_data:
         (DTRk, LTRk),(DTEk, LTEk) = fold
 
-        pred_L, llr = LR.computeLR(DTRk, LTRk, DTEk , l, pi_t) #TODO lambda handling
+        llr, pred_L = LR.computeLR(DTRk, LTRk, DTEk , l, pi_t) #TODO lambda handling
         K_scores.append(llr)
         K_LTE.append(LTEk)
     kscores_array = np.concatenate(K_scores).ravel() #computing all the scores for all the folds and then putting them in one single array. Same for the labels.
@@ -208,7 +208,7 @@ def plotLRminDCF(kfold_data, prior_t, mode = "k-fold"):
             minDCF_prior.append(minDCF)
         minDCF_array.append(minDCF_prior) #should result an array of type [ [minDCF-pi_T0, minDCF-pi_T1, minDCF-pi_T2] ...   ]
     
-
+    print("plotting %d-fold" %(kfold_data[0][0][0].shape[0]))
     plots.plotminDCF(l,minDCF_array, prior_t, "lambda")
 
     print("prova")
@@ -245,11 +245,8 @@ if __name__ == "__main__":
     #MVGwrapper(kFoldData, prior, mode = "k-fold", k = k)
     
 
-
-    plotLRminDCF(PCA5, prior_t)
-
-
-
+    plotLRminDCF(PCA7, prior_t)
+    plotLRminDCF(NOPCA, prior_t)
 
 
 

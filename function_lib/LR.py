@@ -36,7 +36,7 @@ def computeLR(DTR, LTR, DTE ,l, pi_t):
     Wmin = lib.vcol(v[0:-1]) #this is the value of W found 
     Bmin = v[-1] #this is the value of b found
     #print(J_v)
-    S = np.dot(Wmin.T, DTE) + Bmin #computing the scores array for the found W and b.
+    S = (np.dot(Wmin.T, DTE) + Bmin).ravel() #computing the scores array for the found W and b.
     LP = np.int32((S > 0).ravel())
     return S, LP  #label predicted using as threshold 0. 
 

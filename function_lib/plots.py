@@ -45,16 +45,18 @@ def heatmap(D, L, title = " ", filename = "defaultname", save = False ):
     plt.show()
     
 
-def plotminDCF(x,minDCF_array,prior_t, x_label):
+def plotminDCF(x,minDCF_array,prior_t, x_label, filename = "minDCF", save = False):
     plt.figure()
     colours=['r','y','b']
     plt.xscale("log")
     plt.xlabel(x_label)
     plt.ylabel("minDCF")
-    #plt.xlim([l[0], l[len(l)]])
+    plt.xlim([x[0], x[len(x)-1]])
     for idx, pi_t in enumerate(prior_t):
         labelDCF = "minDCF pi = %.1f" % (pi_t)    
         plt.plot(x, np.vstack(minDCF_array)[:,idx], label=labelDCF, color=colours[idx])
         
     plt.legend([ "minDCF pi=%.1f" % (prior) for prior in prior_t ])
+    if(save):        
+        plt.savefig('%s_%s.png' % (filename, x_label) )
     plt.show()
