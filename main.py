@@ -1,6 +1,6 @@
 import numpy as np
 import function_lib.lib as lib
-import function_lib.Lab4 as LAB4
+import function_lib.SVM as SVM
 import function_lib.plots as plots
 from scipy.stats import norm #TODO remove if I move gaussianize func
 import math
@@ -181,7 +181,7 @@ def kfoldMVG(kfold_data, prior, MVGmodel):
 
 
 ######## LINEAR REGRESSION ########
-def kfoldLR_minDCF(kfold_data, pi_t, l ): #kfold_data takes only one foldtype. e.g. only PCA5. Not the whole array. 
+def kfoldLR_minDCF(kfold_data, pi_t, prior_t, l ): #kfold_data takes only one foldtype. e.g. only PCA5. Not the whole array. 
 
 
     K_scores = []
@@ -189,37 +189,74 @@ def kfoldLR_minDCF(kfold_data, pi_t, l ): #kfold_data takes only one foldtype. e
     for fold in kfold_data:
         (DTRk, LTRk),(DTEk, LTEk) = fold
 
-        llr, pred_L = LR.computeLR(DTRk, LTRk, DTEk , l, pi_t) #TODO lambda handling
+        llr, pred_L = LR.computeLR(DTRk, LTRk, DTEk , l, pi_t) 
         K_scores.append(llr)
         K_LTE.append(LTEk)
     kscores_array = np.concatenate(K_scores).ravel() #computing all the scores for all the folds and then putting them in one single array. Same for the labels.
     kLTE_array = np.concatenate(K_LTE).ravel()
-    minDCF = model_eval.compute_min_Normalized_DCF(kLTE_array, kscores_array, pi_t, C_fn = 1 , C_fp =  1)
+    minDCF = []
+    for prior in prior_t:
+        minDCF.append(model_eval.compute_min_Normalized_DCF(kLTE_array, kscores_array, prior, C_fn = 1 , C_fp =  1))
     #print("[lin-LR] lambda = prior_T = %.1f minDCF = %.3f," % (l, pi_t, minDCF) )
     #TODO FIX PRINT
     return minDCF
 
 
-def plotLR_lambda_minDCF(kfold_data, prior_t, mode = "k-fold"):
+def plotLR_lambda_minDCF(kfold_data, prior_t, pi_t, mode = "k-fold"):
     l = np.logspace(-5, 1, num = 15) #limiting the number of points by 50.
-    minDCF_array = []
+    minDCF_array = [ [] for i in range(len(prior_t)) ]
     for lamb in l:
-        minDCF_prior = []
-        for pi_t in prior_t:
-            minDCF = kfoldLR_minDCF(kfold_data, pi_t, lamb)
-            minDCF_prior.append(minDCF)
-        minDCF_array.append(minDCF_prior) #should result an array of type [ [minDCF-pi_T0, minDCF-pi_T1, minDCF-pi_T2] ...   ]
-    
+        minDCF = kfoldLR_minDCF(kfold_data, pi_t, prior_t, lamb)
+        [ minDCF_array[i].append(minDCF[i]) for i in range(len(minDCF)) ]
+     
     print("plotting %d-fold" %(kfold_data[0][0][0].shape[0]))
     plots.plotminDCF(l,minDCF_array, prior_t, "lambda")
     
 def computeLR_minDCF(kfold_data, prior_t, l, mode = "k-fold"):
     for pi_t in prior_t:
         minDCF = kfoldLR_minDCF(kfold_data, pi_t, l)
-        print("[linear-LR] - lambda: %f prior_T: %.1f minDCF: %.3f" % (l, pi_t, minDCF))
+        for prior in prior_t:
+            print("[linear-LR] - lambda: %f p_T: %.1f prior: %.1f minDCF: %.3f" % (l, pi_t, prior, minDCF))
     
 ######## SVM ########
+def linSVM_minDCF(kfold_data, C, pi_t, prior_t): #if pi_t = 0 -> no SVM balancing #TODO handle k
+    K_scores = []
+    K_LTE = []
+    for fold in kfold_data:
+        (DTRk, LTRk),(DTEk, LTEk) = fold
+        SVMObj = SVM.SVMClass(DTRk, LTRk, "linear", k = 1.0, pi_t = pi_t) #use default value k=1
+        alpha = SVMObj.trainSVM(C)
+        scores , pred_L = SVMObj.compute_labels(alpha, DTEk)
+        K_scores.append(scores)
+        K_LTE.append(LTEk)
+    kscores_array = np.concatenate(K_scores).ravel() #computing all the scores for all the folds and then putting them in one single array. Same for the labels.
+    kLTE_array = np.concatenate(K_LTE).ravel()
 
+    minDCF = []
+    for prior in prior_t:
+        minDCF.append(model_eval.compute_min_Normalized_DCF(kLTE_array, kscores_array, prior, C_fn = 1 , C_fp =  1))
+
+    #print("[lin-LR] lambda = prior_T = %.1f minDCF = %.3f," % (l, pi_t, minDCF) )
+    #TODO FIX PRINT
+    return minDCF
+
+
+def plotLinSVM_C_minDCF(kfold_data, prior_t, pi_t = 0, mode = "k-fold"): #pi_t = 0 is unbalanced
+    C = np.logspace(-5, 1, num = 15) #limiting the number of points by 50.
+    minDCF_array = [ [] for i in range(len(prior_t)) ] #create an array with a sub-array for each prior computed.
+    for c in C:
+        minDCF = linSVM_minDCF(kfold_data, c, pi_t, prior_t)
+        [ minDCF_array[i].append(minDCF[i]) for i in range(len(minDCF)) ]
+    print("plotting %d-fold" %(kfold_data[0][0][0].shape[0]))
+    plots.plotminDCF(C,minDCF_array, prior_t, "C")
+    
+    #TODO function below
+def computeLR_minDCF(kfold_data, prior_t, C, mode = "k-fold"):
+    minDCFumb = linSVM_minDCF(kfold_data, C)
+    print("[linear-unbalancedSVM] - C: %f minDCF: %.3f" % (C, minDCFumb))
+    for pi_t in prior_t:
+        minDCF = linSVM_minDCF(kfold_data, C, pi_t)
+        print("[linear-balancedSVM] - C: %f prior_T: %.1f minDCF: %.3f" % (C, pi_t, minDCF))
 
 
 if __name__ == "__main__":
@@ -249,11 +286,14 @@ if __name__ == "__main__":
     #MVGwrapper(kFoldData, prior, mode = "k-fold", k = k)
     
 
-    plotLR_lambda_minDCF(PCA7, prior_t)
-    plotLR_lambda_minDCF(NOPCA, prior_t)
+    # plotLR_lambda_minDCF(NOPCA, prior_t, 0.5)
+    # plotLR_lambda_minDCF(PCA5, prior_t, 0.5)
+    # plotLR_lambda_minDCF(PCA6, prior_t, 0.5)
+    # plotLR_lambda_minDCF(PCA7, prior_t, 0.5)
+    #plotLR_lambda_minDCF(NOPCA, prior_t)
 
 
-
+    plotLinSVM_C_minDCF(NOPCA, prior_t, 0.5)
 
 
 

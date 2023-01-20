@@ -43,7 +43,6 @@ def heatmap(D, L, title = " ", filename = "defaultname", save = False ):
         if(save):        
             plt.savefig('%s_heatmap_%s.png' % (filename, labels[i]) )
     plt.show()
-    
 
 def plotminDCF(x,minDCF_array,prior_t, x_label, filename = "minDCF", save = False):
     plt.figure()
@@ -54,9 +53,35 @@ def plotminDCF(x,minDCF_array,prior_t, x_label, filename = "minDCF", save = Fals
     plt.xlim([x[0], x[len(x)-1]])
     for idx, pi_t in enumerate(prior_t):
         labelDCF = "minDCF pi = %.1f" % (pi_t)    
-        plt.plot(x, np.vstack(minDCF_array)[:,idx], label=labelDCF, color=colours[idx])
+        plt.plot(x, minDCF_array[idx], label=labelDCF, color=colours[idx])
         
     plt.legend([ "minDCF pi=%.1f" % (prior) for prior in prior_t ])
     if(save):        
         plt.savefig('%s_%s.png' % (filename, x_label) )
     plt.show()
+  
+
+def old_plotminDCF(x,minDCF_array,prior_t, x_label, unbalanced_minDCF = None, filename = "minDCF", save = False):
+    
+    colours=['r','y','b']
+
+    for prioridx in prior_t:
+
+        plt.figure()
+        plt.xscale("log")
+        plt.xlabel(x_label)
+        plt.ylabel("minDCF")
+        plt.xlim([x[0], x[len(x)-1]])
+        for idx, pi_t in enumerate(prior_t):
+            labelDCF = "minDCF pi = %.1f" % (pi_t)    
+            plt.plot(x, np.vstack(minDCF_array)[:,idx], label=labelDCF, color=colours[idx])
+        
+        if unbalanced_minDCF is not None:    
+            plt.plot(x, unbalanced_minDCF, label="minDCF unbalanced", color='g')
+            plt.legend([ "minDCF pi=%.1f" % (prior) for prior in prior_t].append("minDCF unbalanced"))
+        else:
+            plt.legend([ "minDCF pi=%.1f" % (prior) for prior in prior_t ])
+        
+        if(save):        
+            plt.savefig('%s_%s.png' % (filename, x_label) )
+        plt.show()

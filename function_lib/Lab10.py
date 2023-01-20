@@ -1,24 +1,43 @@
 import numpy as np
 import scipy.special
-import lib
+import function_lib.lib as lib
 import matplotlib.pyplot as plt
-import Lab4 as LAB4
-import GMM_load 
+
+######UTILITIES######
+
+def compute_Mean_CovMatr(D):
+    mu = D.mean(1)
+    mu = mu.reshape((mu.size,1))
+    D_centered = D - mu
+    #computing the covariance matrix
+    C = np.dot(D_centered, D_centered.T)/D_centered.shape[1]
+    return mu, C
+
+def logpdf_GAU_ND(x, mu, c):
+    M = x.shape[0]
+    logdet_sign, logdet = np.linalg.slogdet(c) #returns the sign and the log-determinant
+    const = -M*0.5*np.log(2*np.pi) -0.5*logdet
+    c_inv = np.linalg.inv(c) #inversion of the covariance matrix
+    return_val = [ const - 0.5*np.dot( np.dot((x[:,i:i+1]-mu).T, c_inv), x[:,i:i+1]-mu) for i in range (x.shape[1]) ]
+    return np.array(return_val).ravel()
+
 
 def GAU_logpdf(X, mu, var):
     # Computes the log-density of the dataset
     X =X.flatten()
     return (-0.5*np.log(2*np.pi))-0.5*np.log(var)-(((X-mu)**2)/(2*var))
 
+######END OF UTILITIES######
+
 def computeStartGMM(X): #returns a list [(1.0,mu,C)]
-    mu, C = LAB4.compute_Mean_CovMatr(X)
+    mu, C = compute_Mean_CovMatr(X)
     return [(1.0, mu, C)]
 
 def logpdf_GMM(X, gmm): #gmm is a list of type [(w,mu,C), ...] Return a ll for each sample.
     logpdf_array = []
     priors_array = []
     for (w, mu, C) in gmm:
-        X_logpdf = LAB4.logpdf_GAU_ND(X, mu, C)
+        X_logpdf = logpdf_GAU_ND(X, mu, C)
         logpdf_array.append(X_logpdf)
         priors_array.append(w)
     S = np.vstack(logpdf_array)
@@ -184,9 +203,13 @@ def LBG(X, gmm, numIterations, mode, alpha = 0.1, psi = 0.1, stop = 1e-6):
     
     return gmm
 
-def GMMclassification(DTR, LTR, DTE, LTE, LBG_mode, algorithm_iterations, alpha = 0.1, psi = 0.1, stop = 1e-6):
+
+######CLASSIFIER FUNCTION#######
+
+#LGB_mode is tied, diag, full
+def GMMBinaryclassification(DTR, LTR, DTE, LTE, LBG_mode, algorithm_iterations, alpha = 0.1, psi = 0.1, stop = 1e-6):
     
-    numClass = np.max(LTR) + 1 #suppose N classes from 0 to N-1
+    numClass = 2 #suppose N classes from 0 to N-1
     DTE_marginals = np.zeros((numClass, DTE.shape[1])) #marginals for the evaluation set
     X = [ DTR[:, LTR == i] for i in range(numClass)]
     for i, Xc in enumerate(X):
@@ -195,10 +218,12 @@ def GMMclassification(DTR, LTR, DTE, LTE, LBG_mode, algorithm_iterations, alpha 
         DTE_marginals[ i:i+1, :] += (marginalLL)
     predicted_L = np.argmax(DTE_marginals, axis = 0)
 
-    return predicted_L
+    llr = DTE_marginals[1,:] / DTE_marginals[0,:] #computing the score for the binary case
 
+    return llr.ravel(), predicted_L
 
-def plotNormalDensityOverNormalizedHistogram(dataset, gmm):
+#TODO move to plots.py if necessary
+def plotGMMNormalDensityOverNormalizedHistogram(dataset, gmm):
     # Function used to plot the computed normal density over the normalized histogram
     dataset = dataset.flatten()
     plt.figure()
@@ -213,48 +238,4 @@ def plotNormalDensityOverNormalizedHistogram(dataset, gmm):
     plt.show()
     return  
     
-
-
-if __name__ == "__main__":
-    gmm = GMM_load.load_gmm("10_Gaussian_Mixture_Models\Data\GMM_4D_3G_init.json")
-    
-    X = np.load("10_Gaussian_Mixture_Models/Data/GMM_data_4D.npy")
-    #(logdens, S) = logpdf_GMM(X,gmm)
-    #logdens_solution = np.load("10_Gaussian_Mixture_Models/Data/GMM_4D_3G_init_ll.npy")
-    #print(logdens_solution - logdens)
-
-    print("GMM_EM")
-    #gmm4D = GMM_EM_full(X,gmm)
-    #gmm4D = GMM_EM_tied(X,gmm)
-    
-    X1D = np.load("10_Gaussian_Mixture_Models/Data/GMM_data_1D.npy")
-    #gmm1D = GMM_EM_tied(X1D,gmm)
-    '''
-    plotNormalDensityOverNormalizedHistogram(X1D,gmm1D)
-    gmm1D = GMM_EM_full(X1D,gmm)
-    plotNormalDensityOverNormalizedHistogram(X1D,gmm1D)
-    gmm1D = GMM_EM_diag(X1D,gmm)
-    plotNormalDensityOverNormalizedHistogram(X1D,gmm1D)
-    '''
-
-    #mu, C = LAB4.compute_Mean_CovMatr(X)
-    #LBG(X, computeStartGMM(X), 2, "full")
-    (D,L) = lib.load_iris()
-    (DTR, LTR), (DTE, LTE) = lib.split_db_2to1(D,L)
-    k=0
-    pred = GMMclassification(DTR, LTR, DTE, LTE, "diag", k, psi=0.01)
-    print(lib.compute_accuracy_error(LTE, pred)[1])
-    
-    #comparewith = GMM_load.load_gmm("10_Gaussian_Mixture_Models\Data\GMM_4D_3G_EM.json")
-    #comparewith_1 = np.array([[i[0],i[1],i[2]] for i in comparewith])
-    #print(gmm_1 - comparewith_1)
-'''
-    
-    gmm = GMM_load.load_gmm("10_Gaussian_Mixture_Models\Data\GMM_1D_3G_init.json")
-    X = np.load("10_Gaussian_Mixture_Models/Data/GMM_data_1D.npy")
-    (logdens, S) = logpdf_GMM(X,gmm)
-    logdens_solution = np.load("10_Gaussian_Mixture_Models/Data/GMM_1D_3G_init_ll.npy")
-    print(logdens_solution - logdens)
-
-'''    
   
