@@ -207,7 +207,7 @@ def LBG(X, gmm, numIterations, mode, alpha = 0.1, psi = 0.1, stop = 1e-6):
 ######CLASSIFIER FUNCTION#######
 
 #LGB_mode is tied, diag, full
-def GMMBinaryclassification(DTR, LTR, DTE, LTE, LBG_mode, algorithm_iterations, alpha = 0.1, psi = 0.1, stop = 1e-6):
+def GMMBinaryclassification(DTR, LTR, DTE, LBG_mode, algorithm_iterations, alpha = 0.1, psi = 0.1, stop = 1e-6):
     
     numClass = 2 #suppose N classes from 0 to N-1
     DTE_marginals = np.zeros((numClass, DTE.shape[1])) #marginals for the evaluation set
