@@ -64,19 +64,13 @@ def z_normalize(DTR, DTE = None):
 def KfoldsGenerator(D, L, k, seed=0): #passing the classifier function
     np.random.seed(seed)
     idx = np.random.permutation(D.shape[1]) #randomizes the order of the data
-    #TODO check if I have to apply PCA only on Training fold.
-    #applying PCA
-    D_PCA5 = PCA.compute_PCA(5,D) #TODO check se applicare PCA a TRAINING e a EVAL separatamente
-    D_PCA6 = PCA.compute_PCA(6,D)
-    D_PCA7 = PCA.compute_PCA(7,D)
 
     #Preparing single-fold dataset (T-0.66% E-0.33%)
     train_size = int(math.ceil((D.shape[1]*0.66)))
     idxSTrain = idx[0:train_size]
     idxSTest = idx[train_size:]
-    DTR = D[:,idxSTrain]
+    DTR, DTE = z_normalize(D[:,idxSTrain], D[:,idxSTest]) 
     LTR = L[idxSTrain]
-    DTE = D[:,idxSTest]
     LTE = L[idxSTest]
 
     singleNOPCA = ((DTR, LTR),(DTE, LTE))
@@ -101,9 +95,8 @@ def KfoldsGenerator(D, L, k, seed=0): #passing the classifier function
     for i in range(k):
         idxTest = idx[i*group_size:(i*group_size + group_size)]
         idxTrain = [i for i in idx if i not in set(idxTest)]
-        DTR = D[:,idxTrain]
+        DTR, DTE = z_normalize( D[:,idxTrain], D[:,idxTest])
         LTR = L[idxTrain]
-        DTE = D[:,idxTest]
         LTE = L[idxTest]
         NOPCA.append(((DTR, LTR), (DTE, LTE)))
         DTR_PCA, DTE_PCA = PCA.compute_PCA(5,DTR,DTE)
@@ -329,7 +322,7 @@ if __name__ == "__main__":
 
     #Create the K-folds 
     k = 5 #num of folds
-    singleFoldData, kFoldData = (singleNOPCA, singlePCA5, singlePCA6, singlePCA7) , (NOPCA, PCA5, PCA6, PCA7) = KfoldsGenerator(DTR_z,LTR, k)
+    singleFoldData, kFoldData = (singleNOPCA, singlePCA5, singlePCA6, singlePCA7) , (NOPCA, PCA5, PCA6, PCA7) = KfoldsGenerator(DTR,LTR, k)
 
     prior_f = np.array([0.5, 0.9, 0.1])
     prior_t = np.array([0.5, 0.1, 0.9])
