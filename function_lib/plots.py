@@ -44,10 +44,14 @@ def heatmap(D, L, title = " ", filename = "defaultname", save = False ):
             plt.savefig('%s_heatmap_%s.png' % (filename, labels[i]) )
     plt.show()
 
-def plotminDCF(x,minDCF_array,prior_t, x_label, filename = "minDCF", save = False):
+def plotminDCF(x,minDCF_array,prior_t, x_label, filename = "minDCF",  save = False, logScale = True):
     plt.figure()
+    plt.title(filename)
     colours=['r','y','b']
-    plt.xscale("log")
+    if(logScale):
+        plt.xscale("log")
+    else:
+        plt.xticks(x) #in case of GMM shows only 1, 2, 4, 8...
     plt.xlabel(x_label)
     plt.ylabel("minDCF")
     plt.xlim([x[0], x[len(x)-1]])
@@ -57,9 +61,11 @@ def plotminDCF(x,minDCF_array,prior_t, x_label, filename = "minDCF", save = Fals
         
     plt.legend([ "minDCF pi=%.1f" % (prior) for prior in prior_t ])
     if(save):        
-        plt.savefig('%s_%s.png' % (filename, x_label) )
-    plt.show()
-  
+        plt.savefig('%s.png' % (filename) )
+        plt.close()
+    else:
+        plt.show()
+
 
 def old_plotminDCF(x,minDCF_array,prior_t, x_label, unbalanced_minDCF = None, filename = "minDCF", save = False):
     
@@ -84,4 +90,5 @@ def old_plotminDCF(x,minDCF_array,prior_t, x_label, unbalanced_minDCF = None, fi
         
         if(save):        
             plt.savefig('%s_%s.png' % (filename, x_label) )
-        plt.show()
+
+        plt.close()
