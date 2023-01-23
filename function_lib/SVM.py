@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import function_lib.lib as lib
 import scipy.optimize
 class SVMClass:
-    def __init__(self, DTR, LTR, kernelType, k, pi_t = 0.0, c = 0.0, d = 0.0, gamma = 0.0): #K is basically the same as before but we add power of 2 of it at the kernel.
+    def __init__(self, DTR, LTR, kernelType, k, pi_t = 0.0, c = 0.0, d = 2.0, gamma = 0.0): #K is basically the same as before but we add power of 2 of it at the kernel.
         self.kernelType = kernelType
         self.c = c
         self.d = d
@@ -35,12 +35,8 @@ class SVMClass:
 
     def compute_RBFKernel(self, X1, X2, gamma, k): #TODO optimize distance computing
         kernel = np.zeros((X1.shape[1], X2.shape[1]))
-        for i in range(kernel.shape[0]):
-            for j in range(kernel.shape[1]):
-                xi = X1[:, i:i+1]
-                xj = X2[:, j:j+1]
-                diff_sqnorm = np.linalg.norm( xi - xj )**2
-                kernel[i,j] = np.exp(-gamma * diff_sqnorm)
+        distances = lib.vcol((X1 ** 2).sum(axis = 0)) + lib.vrow((X2 ** 2).sum(axis = 0)) - 2 * np.dot(X1.T, X2)
+        kernel = np.exp(-gamma * distances)
         return kernel + k**2
 
     def JDual(self, alpha):
