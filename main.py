@@ -118,9 +118,9 @@ def MVGwrapper(data, prior, mode, k = 0):
 
     MVGmodels = {
         0 : (MVG.logMVG, "fullMVG"),
-        1 : (MVG.logNaiveBayes, "naiveBayesMVG"),
-        2 : (MVG.TiedCovariance_logNB, "TiedCovarianceNaiveBayesMVG"),
-        3 : (MVG.TiedCovariance_logMVG, "TiedCovarianceMVG")
+        1 : (MVG.logNaiveBayes, "diagMVG"),
+        2 : (MVG.TiedCovariance_logNB, "TiedDiagMVG"),
+        3 : (MVG.TiedCovariance_logMVG, "TiedMVG")
     }
 
     
@@ -192,10 +192,7 @@ def kfoldLR_minDCF(kfold_data, pi_t, prior_t, l ): #kfold_data takes only one fo
     minDCF = []
     for prior in prior_t:
         minDCF.append(model_eval.compute_min_Normalized_DCF(kLTE_array, kscores_array, prior, C_fn = 1 , C_fp =  1))
-    #print("[lin-LR] lambda = prior_T = %.1f minDCF = %.3f," % (l, pi_t, minDCF) )
-    #TODO FIX PRINT
     return minDCF
-
 
 def plotLR_minDCF(kfold_data, prior_t, pi_t, filename = "LogReg", save=False, mode = "k-fold"):
     l = np.logspace(-5, 2, num = 20) #limiting the number of points by 50.
@@ -214,12 +211,18 @@ def computeLR_minDCF(kfold_data, prior_t, l, mode = "k-fold"):
             print("[linear-LR] - lambda: %f p_T: %.1f prior: %.1f minDCF: %.3f" % (l, pi_t, prior, minDCF))
     
 ######## SVM ########
-def linSVM_minDCF(kfold_data, C, pi_t, prior_t): #if pi_t = 0 -> no SVM balancing #TODO handle k
+def SVM_minDCF(kfold_data, C, pi_t, prior_t, kernelType, gamma = 0.0, c = 0.0, selected_prior = None): #if pi_t = 0 -> no SVM balancing #TODO handle k
     K_scores = []
     K_LTE = []
     for fold in kfold_data:
         (DTRk, LTRk),(DTEk, LTEk) = fold
-        SVMObj = SVM.SVMClass(DTRk, LTRk, "linear", k = 1.0, pi_t = pi_t) #use default value k=1
+        if(kernelType == "linear"):
+            SVMObj = SVM.SVMClass(DTRk, LTRk, "linear", k = 1.0, pi_t = pi_t) #use default value k=1
+        elif(kernelType == "quadratic"):
+            SVMObj = SVM.SVMClass(DTRk, LTRk, "poly", k = 1.0, d = 2.0, c = c, pi_t = pi_t)
+        elif(kernelType == "RBF"):
+            SVMObj = SVM.SVMClass(DTRk, LTRk, "RBF", k = 1.0, gamma = gamma, pi_t = pi_t) 
+
         alpha = SVMObj.trainSVM(C)
         scores , pred_L = SVMObj.compute_labels(alpha, DTEk)
         K_scores.append(scores)
@@ -227,31 +230,65 @@ def linSVM_minDCF(kfold_data, C, pi_t, prior_t): #if pi_t = 0 -> no SVM balancin
     kscores_array = np.concatenate(K_scores).ravel() #computing all the scores for all the folds and then putting them in one single array. Same for the labels.
     kLTE_array = np.concatenate(K_LTE).ravel()
 
+    if(selected_prior is not None):
+        return model_eval.compute_min_Normalized_DCF(kLTE_array, kscores_array, selected_prior, C_fn = 1 , C_fp =  1)
+
     minDCF = []
     for prior in prior_t:
         minDCF.append(model_eval.compute_min_Normalized_DCF(kLTE_array, kscores_array, prior, C_fn = 1 , C_fp =  1))
-
-    #print("[lin-LR] lambda = prior_T = %.1f minDCF = %.3f," % (l, pi_t, minDCF) )
-    #TODO FIX PRINT
     return minDCF
+
+    #TODO function below
+def computeSVM_minDCF(kfold_data, C, pi_t, prior_t, kernelType, gamma = 0.0, c = 0.0):
+    minDCFumb = SVM_minDCF(kfold_data, C)
+    print("[%s-unbalancedSVM] - C: %f minDCF: %.3f" % (kernelType, C, minDCFumb))
+    for pi_t in prior_t:
+        minDCF = SVM_minDCF(kfold_data, C, pi_t, prior_t, kernelType, gamma, c)
+        print("[%s-balancedSVM] - C: %f prior_T: %.1f minDCF: %.3f" % (kernelType, C, pi_t, minDCF))
 
 
 def plotLinSVM_minDCF(kfold_data, prior_t, pi_t = 0, filename="SVM", save=False, mode = "k-fold"): #pi_t = 0 is unbalanced
     C = np.logspace(-5, 0, num = 20) #limiting the number of points by 50.
     minDCF_array = [ [] for i in range(len(prior_t)) ] #create an array with a sub-array for each prior computed.
-    for c in C:
-        minDCF = linSVM_minDCF(kfold_data, c, pi_t, prior_t)
+    for Cx in C:
+        minDCF = SVM_minDCF(kfold_data, Cx, pi_t, prior_t, "linear")
         [ minDCF_array[i].append(minDCF[i]) for i in range(len(minDCF)) ]
     print("plotting %d-fold" %(kfold_data[0][0][0].shape[0]))
     plots.plotminDCF(C,minDCF_array, prior_t, "C", filename, save)
     
-    #TODO function below
-def computeLR_minDCF(kfold_data, prior_t, C, mode = "k-fold"):
-    minDCFumb = linSVM_minDCF(kfold_data, C)
-    print("[linear-unbalancedSVM] - C: %f minDCF: %.3f" % (C, minDCFumb))
-    for pi_t in prior_t:
-        minDCF = linSVM_minDCF(kfold_data, C, pi_t)
-        print("[linear-balancedSVM] - C: %f prior_T: %.1f minDCF: %.3f" % (C, pi_t, minDCF))
+
+######## Quad + RBF SVM ########
+
+
+def plotRBFSVM_minDCF(kfold_data, prior_t, selected_prior, pi_t = 0, filename="SVM", save=False, mode = "k-fold"): #pi_t = 0 is unbalanced
+    C = np.logspace(-4, 0, num = 20) #limiting the number of points by 50.
+    gamma_range = np.array([ 0.001, 0.01, 0.1 ])
+    gamma_minDCF = [ [] for i in range(len(gamma_range)) ]
+    for gammaIdx, gamma in enumerate(gamma_range):
+        for Cx in C: 
+            minDCF = SVM_minDCF(kfold_data, Cx, pi_t, prior_t, "RBF", gamma = gamma, selected_prior= selected_prior)
+            gamma_minDCF[gammaIdx].append(minDCF)
+    plots.plotminDCF_kernelSVM(C, gamma_minDCF, gamma_range, selected_prior, "RBF", filename, save)
+
+
+
+def plotQuadraticSVM_minDCF(kfold_data, prior_t, selected_prior, pi_t = 0, filename="SVM", save=False, mode = "k-fold"): #pi_t = 0 is unbalanced
+    C = np.logspace(-4, 0, num = 20) #limiting the number of points by 50.
+    c_range = np.array([1, 10, 30])
+    c_minDCF = [ [] for i in range(len(c_range)) ]
+    for c_idx, c in enumerate(c_range):
+        for Cx in C: 
+            minDCF = SVM_minDCF(kfold_data, Cx, pi_t, prior_t, "quadratic", c = c, selected_prior= selected_prior)
+            c_minDCF[c_idx].append(minDCF)
+    plots.plotminDCF_kernelSVM(C, c_minDCF, c_range, selected_prior, "quadratic", filename, save)
+
+
+    minDCF_array = [ [] for i in range(len(prior_t)) ] #create an array with a sub-array for each prior computed.
+    for idx_c in C:
+        minDCF = SVM_minDCF(kfold_data, idx_c, pi_t, prior_t, "linear")
+        [ minDCF_array[i].append(minDCF[i]) for i in range(len(minDCF)) ]
+    print("plotting %d-fold" %(kfold_data[0][0][0].shape[0]))
+    plots.plotminDCF(C,minDCF_array, prior_t, "C", filename, save)
 
 
 ######## GMM ########
@@ -287,14 +324,17 @@ def GMM_minDCF(kfold_data, prior_t, algorithm_iterations=0,  LBG_mode = "full"):
     minDCF = []
     for prior in prior_t:
         minDCF.append(model_eval.compute_min_Normalized_DCF(kLTE_array, kscores_array, prior, C_fn = 1 , C_fp =  1))
-
-    #print("[lin-LR] lambda = prior_T = %.1f minDCF = %.3f," % (l, pi_t, minDCF) )
-    #TODO FIX PRINT
     return minDCF
+
+def computeGMM_minDCF(kfold_data, prior_t, algorithm_iterations, LBG_mode):
+    for pi_t in prior_t:
+        minDCF = GMM_minDCF(kfold_data, prior_t, algorithm_iterations,  LBG_mode )
+        for prior in prior_t:
+            print("[%s-GMM] - #iterations: %d p_T: %.1f prior: %.1f minDCF: %.3f" % (LBG_mode, algorithm_iterations, pi_t, prior, minDCF))
 
 
 def plotGMM_minDCF(kfold_data, prior_t, LBG_mode,  filename="GMM", save = False,  mode = "k-fold"): #pi_t = 0 is unbalanced
-    C = np.arange(0, 7, 1) #range of analysis from 1 to 2**7 components of GMM
+    C = np.arange(0, 6, 1) #range of analysis from 1 to 2**7 components of GMM
     minDCF_array = [ [] for i in range(len(prior_t)) ] #create an array with a sub-array for each prior computed.
     for c in C:
         minDCF = GMM_minDCF(kfold_data, prior_t, algorithm_iterations=c,  LBG_mode = LBG_mode )
@@ -309,19 +349,19 @@ def plotGMM_minDCF(kfold_data, prior_t, LBG_mode,  filename="GMM", save = False,
 
 if __name__ == "__main__":
     DTR, LTR = load("dataset/Train.txt")
-    # plots.plot_hist(DTR,LTR, "raw dataset", "plots/1_RawDataset", True)
+    #plots.plot_hist(DTR,LTR, "raw dataset", "plots/1_RawDataset", True)
     # DTR_gau = gaussianize(DTR)
-    # plots.plot_hist(DTR_gau,LTR, "gaussianised dataset" , "plots/2_GaussianizedDataset", True)
+    #plots.plot_hist(DTR_gau,LTR, "gaussianised dataset" , "plots/2_GaussianizedDataset", True)
     DTR_z = z_normalize(DTR) #TODO maybe move it to kfold function and perform it on the DTR of the fold.
     #TODO maybe also perform PCS 
     #plots.plot_hist(DTR_z, LTR, "Z-Norm", "plots/3_zNormDataset", True)
 
-    #plots.heatmap(DTR_z, LTR,  "Heatmap, Z-norm dataset")
+    #plots.heatmap(DTR_z, LTR,  "Heatmap, Z-norm dataset", "heatmap", True)
 
     #plots.plot_correlations(DTR_z, LTR)
 
     #Create the K-folds 
-    k = 5 #num of folds
+    k = 3 #num of folds
     singleFoldData, kFoldData = (singleNOPCA, singlePCA5, singlePCA6, singlePCA7) , (NOPCA, PCA5, PCA6, PCA7) = KfoldsGenerator(DTR,LTR, k)
 
     prior_f = np.array([0.5, 0.9, 0.1])
@@ -333,59 +373,107 @@ if __name__ == "__main__":
 
     #MVGwrapper(singleFoldData, prior, mode = "single-fold")
     #MVGwrapper(kFoldData, prior, mode = "k-fold", k = k)
-    
+
+
     '''
-    plotLR_minDCF(NOPCA, prior_t, 0.5, "LR_NOPCA_0.5", True )
-    plotLR_minDCF(PCA5, prior_t, 0.5,  "LR_PCA5_0.5", True)
-    plotLR_minDCF(PCA6, prior_t, 0.5,  "LR_PCA6_0.5", True)
-    plotLR_minDCF(PCA7, prior_t, 0.5,  "LR_PCA7_0.5", True)
+    plotLR_minDCF(NOPCA, prior_t, 0.5, "LR-Full-πT=0.5", True )
+    plotLR_minDCF(PCA5, prior_t, 0.5,  "LR-PCA5-πT=0.5", True)
+    plotLR_minDCF(PCA6, prior_t, 0.5,  "LR-PCA6-πT=0.5", True)
+    plotLR_minDCF(PCA7, prior_t, 0.5,  "LR-PCA7-πT=0.5", True)
 
-    plotLR_minDCF(NOPCA, prior_t, 0.1, "LR_NOPCA_0.1", True )
-    plotLR_minDCF(PCA5, prior_t, 0.1,  "LR_PCA5_0.1", True)
-    plotLR_minDCF(PCA6, prior_t, 0.1,  "LR_PCA6_0.1", True)
-    plotLR_minDCF(PCA7, prior_t, 0.1,  "LR_PCA7_0.1", True)
+    plotLR_minDCF(NOPCA, prior_t, 0.1, "LR-Full-πT=0.1", True )
+    plotLR_minDCF(PCA5, prior_t, 0.1,  "LR-PCA5-πT=0.1", True)
+    plotLR_minDCF(PCA6, prior_t, 0.1,  "LR-PCA6-πT=0.1", True)
+    plotLR_minDCF(PCA7, prior_t, 0.1,  "LR-PCA7-πT=0.1", True)
 
-    plotLR_minDCF(NOPCA, prior_t, 0.9, "LR_NOPCA_0.9", True )
-    plotLR_minDCF(PCA5, prior_t, 0.9,  "LR_PCA5_0.9", True)
-    plotLR_minDCF(PCA6, prior_t, 0.9,  "LR_PCA6_0.9", True)
-    plotLR_minDCF(PCA7, prior_t, 0.9,  "LR_PCA7_0.9", True)
+    plotLR_minDCF(NOPCA, prior_t, 0.9, "LR-Full-πT=0.9", True )
+    plotLR_minDCF(PCA5, prior_t, 0.9,  "LR-PCA5-πT=0.9", True)
+    plotLR_minDCF(PCA6, prior_t, 0.9,  "LR-PCA6-πT=0.9", True)
+    plotLR_minDCF(PCA7, prior_t, 0.9,  "LR-PCA7-πT=0.9", True)
     
-    print("SVM_NOPCA_0.5")
-    plotLinSVM_minDCF(NOPCA, prior_t, 0.5, "SVM_NOPCA_0.5", True)
-    print("SVM_PCA5_0.5")
-    plotLinSVM_minDCF(PCA5, prior_t, 0.5, "SVM_PCA5_0.5", True)
-    print("SVM_PCA6_0.5")
-    plotLinSVM_minDCF(PCA6, prior_t, 0.5, "SVM_PCA6_0.5", True)
-    print("SVM_PCA7_0.5")
-    plotLinSVM_minDCF(PCA7, prior_t, 0.5, "SVM_PCA7_0.5", True)
+    print("SVM-Full-unbalanced")
+    plotLinSVM_minDCF(NOPCA, prior_t, 0.0, "SVM-Full-unbalanced", True)
+    print("SVM-PCA5-unbalanced")
+    plotLinSVM_minDCF(PCA5, prior_t, 0.0, "SVM-PCA5-unbalanced", True)
+    print("SVM-PCA6-unbalanced")
+    plotLinSVM_minDCF(PCA6, prior_t, 0.0, "SVM-PCA6-unbalanced", True)
+    print("SVM-PCA7-unbalanced")
+    plotLinSVM_minDCF(PCA7, prior_t, 0.0, "SVM-PCA7-unbalanced", True)
+
+    
+    print("SVM-Full-πT=0.5")
+    plotLinSVM_minDCF(NOPCA, prior_t, 0.5, "SVM-Full-πT=0.5", True)
+    print("SVM-PCA5-πT=0.5")
+    plotLinSVM_minDCF(PCA5, prior_t, 0.5, "SVM-PCA5-πT=0.5", True)
+    print("SVM-PCA6-πT=0.5")
+    plotLinSVM_minDCF(PCA6, prior_t, 0.5, "SVM-PCA6-πT=0.5", True)
+    print("SVM-PCA7-πT=0.5")
+    plotLinSVM_minDCF(PCA7, prior_t, 0.5, "SVM-PCA7-πT=0.5", True)
     
 
-    print("SVM_NOPCA_0.1")
-    plotLinSVM_minDCF(NOPCA, prior_t, 0.1, "SVM_NOPCA_0.1", True)
-    print("SVM_PCA5_0.1")
-    plotLinSVM_minDCF(PCA5, prior_t, 0.1, "SVM_PCA5_0.1", True)
-    print("SVM_PCA6_0.1")
-    plotLinSVM_minDCF(PCA6, prior_t, 0.1, "SVM_PCA6_0.1", True)
-    print("SVM_PCA7_0.1")
-    plotLinSVM_minDCF(PCA7, prior_t, 0.1, "SVM_PCA7_0.1", True)
+    print("SVM-Full-πT=0.1")
+    plotLinSVM_minDCF(NOPCA, prior_t, 0.1, "SVM-Full-πT=0.1", True)
+    print("SVM-PCA5-πT=0.1")
+    plotLinSVM_minDCF(PCA5, prior_t, 0.1, "SVM-PCA5-πT=0.1", True)
+    print("SVM-PCA6-πT=0.1")
+    plotLinSVM_minDCF(PCA6, prior_t, 0.1, "SVM-PCA6-πT=0.1", True)
+    print("SVM-PCA7-πT=0.1")
+    plotLinSVM_minDCF(PCA7, prior_t, 0.1, "SVM-PCA7-πT=0.1", True)
 
-    print("SVM_NOPCA_0.9")
-    plotLinSVM_minDCF(NOPCA, prior_t, 0.9, "SVM_NOPCA_0.9", True)
-    print("SVM_PCA5_0.9")
-    plotLinSVM_minDCF(PCA5, prior_t, 0.9, "SVM_PCA5_0.9", True)
-    print("SVM_PCA6_0.9")
-    plotLinSVM_minDCF(PCA6, prior_t, 0.9, "SVM_PCA6_0.9", True)
-    
-    print("SVM_PCA7_0.9")
-    plotLinSVM_minDCF(PCA7, prior_t, 0.9, "SVM_PCA7_0.9", True)
+    print("SVM-Full-πT=0.9")
+    plotLinSVM_minDCF(NOPCA, prior_t, 0.9, "SVM-Full-πT=0.9", True)
+    print("SVM-PCA5-πT=0.9")
+    plotLinSVM_minDCF(PCA5, prior_t, 0.9, "SVM-PCA5-πT=0.9", True)
+    print("SVM-PCA6-πT=0.9")
+    plotLinSVM_minDCF(PCA6, prior_t, 0.9, "SVM-PCA6-πT=0.9", True)
+    print("SVM-PCA7-πT=0.9")
+    plotLinSVM_minDCF(PCA7, prior_t, 0.9, "SVM-PCA7-πT=0.9", True)
     '''
+    
+    print("RBF-SVM-Full")
+    plotRBFSVM_minDCF(NOPCA, prior_t, selected_prior=0.5, filename="RBF-SVM-Full", save = True )
+    print("RBF-SVM-PCA7")
+    plotRBFSVM_minDCF(PCA7, prior_t, selected_prior=0.5, filename="RBF-SVM-PCA7", save = True )
+    '''
+    print("RBF-SVM-PCA5")
+    plotRBFSVM_minDCF(PCA5, prior_t, selected_prior=0.5, filename="RBF-SVM-PCA5", save = True )
+    print("RBF-SVM-PCA6")
+    plotRBFSVM_minDCF(PCA6, prior_t, selected_prior=0.5, filename="RBF-SVM-PCA6", save = True )
+    '''
+    
+    print("QuadSVM-NOPCA")
+    plotQuadraticSVM_minDCF(NOPCA, prior_t, selected_prior=0.5, filename="QuadSVM-Full", save = True )
+    print("QuadSVM-PCA7")
+    plotQuadraticSVM_minDCF(PCA7, prior_t, selected_prior=0.5, filename="QuadSVM-PCA7", save = True )
+    '''
+    print("QuadSVM-PCA5")
+    plotQuadraticSVM_minDCF(PCA5, prior_t, selected_prior=0.5, filename="QuadSVM-PCA5", save = True )
+    print("QuadSVM-PCA6")
+    plotQuadraticSVM_minDCF(PCA6, prior_t, selected_prior=0.5, filename="QuadSVM-PCA6", save = True )
+    '''
+    
+    print("GMM-noPCA-full")
+    plotGMM_minDCF(NOPCA, prior_t, LBG_mode="full", filename="GMM-noPCA-full", save=True)
+    print("GMM-noPCA-tied")
+    plotGMM_minDCF(NOPCA, prior_t, LBG_mode="tied", filename="GMM-noPCA-tied", save=True)
+    print("GMM-noPCA-diag")
+    plotGMM_minDCF(NOPCA, prior_t, LBG_mode="diag", filename="GMM-noPCA-diag", save=True)
 
-    print("SVM_NOPCA_0.1")
-    plotLinSVM_minDCF(NOPCA, prior_t, 0.1, "SVM_NOPCA_0.1", True)
+    print("GMM-PCA7-full")
+    plotGMM_minDCF(PCA7, prior_t, LBG_mode="full", filename="GMM-PCA7-full", save=True)
+    print("GMM-PCA7-tied")
+    plotGMM_minDCF(PCA7, prior_t, LBG_mode="tied", filename="GMM-PCA7-tied", save=True)
+    print("GMM-PCA7-diag")
+    plotGMM_minDCF(PCA7, prior_t, LBG_mode="diag", filename="GMM-PCA7-diag", save=True)
 
-    #plotGMM_minDCF(NOPCA, prior_t, LBG_mode="full", filename="GMM-noPCA", save=True)
-
-
-
+    '''
+    print("GMM-PCA6-full")
+    plotGMM_minDCF(PCA6, prior_t, LBG_mode="full", filename="GMM-PCA6-full", save=True)
+    print("GMM-PCA6-tied")
+    plotGMM_minDCF(PCA6, prior_t, LBG_mode="tied", filename="GMM-PCA6-tied", save=True)
+    print("GMM-PCA6-diag")
+    plotGMM_minDCF(PCA6, prior_t, LBG_mode="diag", filename="GMM-PCA6-diag", save=True)
+    '''
+   
 
     print("ciao")

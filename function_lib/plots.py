@@ -33,7 +33,7 @@ def plot_hist(D, L, title = " ", filename = "defaultname", save = False ):
     plt.show()
 
 def heatmap(D, L, title = " ", filename = "defaultname", save = False ):
-    labels = { 0: "Dataset", 1 : "Non-pulsar", 2: "Pulsar" }
+    labels = { 0: "Whole-dataset", 1 : "Non-pulsar", 2: "Pulsar" }
     corrcoeffs = { 0: np.abs(np.corrcoef(D)), 1 : np.abs(np.corrcoef(D[:,L==0])), 2 : np.abs(np.corrcoef(D[:,L==1]))}
     map_colours = { 0: "Greys", 1 : "Reds", 2: "Blues" } 
     for i in range(len(labels)):
@@ -44,7 +44,7 @@ def heatmap(D, L, title = " ", filename = "defaultname", save = False ):
             plt.savefig('%s_heatmap_%s.png' % (filename, labels[i]), dpi=250 )
     plt.show()
 
-def plotminDCF(x,minDCF_array,prior_t, x_label, filename = "minDCF",  save = False, logScale = True):
+def plotminDCF(x,minDCF_array,prior_t, x_label, filename = "minDCF", save = False, logScale = True):
     plt.figure()
     plt.title(filename)
     colours=['r','y','b']
@@ -66,3 +66,25 @@ def plotminDCF(x,minDCF_array,prior_t, x_label, filename = "minDCF",  save = Fal
     else:
         plt.show()
 
+def plotminDCF_kernelSVM(x,minDCF_array,parameter_array, prior, kernelType = "quadratic", filename = "kSVM-minDCF", save = False):
+    plt.figure()
+    plt.title(filename)
+    colours=['r','y','b']
+    plt.xscale("log")
+    plt.xlabel("C")
+    plt.ylabel("minDCF")
+    plt.xlim([x[0], x[len(x)-1]])
+    parameterName = "c"
+    if(kernelType=="RBF"):
+        parameterName = "γ"
+
+    for idx, param in enumerate(parameter_array):
+        labelDCF = "minDCF π=%.1f, %s=%f" % (prior, parameterName, param)    
+        plt.plot(x, minDCF_array[idx], label=labelDCF, color=colours[idx])
+        
+    plt.legend([ "minDCF π=%.1f, %s=%f" % (prior, parameterName, param) for param in parameter_array ])
+    if(save):        
+        plt.savefig('%s.png' % (filename), dpi=250 )
+        plt.close()
+    else:
+        plt.show()
