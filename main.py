@@ -480,12 +480,18 @@ if __name__ == "__main__":
     computeLR_minDCF(NOPCA, prior_t, 1e-4)
     print("LinearLR PCA7")
     computeLR_minDCF(PCA7, prior_t, 1e-4)
-    '''
+    
 
     ### LINEAR SVM ###
     print("LinSVM noPCA")
     computeSVM_minDCF(NOPCA, 5*1e-1, prior_t, "linear")
     computeSVM_minDCF(PCA7, 5*1e-1, prior_t, "linear")
-    
+    '''
+
+
+    ### RBF SVM ###
+    computeSVM_minDCF(NOPCA, 1e-1, prior_t,  "RBF", gamma = 1e-1  )
+    computeSVM_minDCF(PCA7, 1e-1, prior_t, "RBF", gamma = 1e-1 )
+
 
     print("ciao")
