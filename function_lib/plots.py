@@ -69,7 +69,7 @@ def plotminDCF(x,minDCF_array,prior_t, x_label, filename = "minDCF", save = Fals
 def plotminDCF_kernelSVM(x,minDCF_array,parameter_array, prior, kernelType = "quadratic", filename = "kSVM-minDCF", save = False):
     plt.figure()
     plt.title(filename)
-    colours=['r','y','b']
+    colours=['r','y','b', 'k', 'g']
     plt.xscale("log")
     plt.xlabel("C")
     plt.ylabel("minDCF")
