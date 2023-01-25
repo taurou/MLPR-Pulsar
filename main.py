@@ -252,12 +252,14 @@ def SVM_minDCF(kfold_data, C, pi_t, prior_t, kernelType, gamma = 0.0, c = 0.0, s
     return minDCF
 
     #TODO function below
-def computeSVM_minDCF(kfold_data, C, pi_t, prior_t, kernelType, gamma = 0.0, c = 0.0):
-    minDCFumb = SVM_minDCF(kfold_data, C)
-    print("[%s-unbalancedSVM] - C: %f minDCF: %.3f" % (kernelType, C, minDCFumb))
+def computeSVM_minDCF(kfold_data, C, prior_t, kernelType, gamma = 0.0, c = 0.0):
+    minDCFunbalanced = SVM_minDCF(kfold_data, C, 0, prior_t, kernelType, gamma, c)
+    for idx, prior in enumerate(prior_t):
+        print("[%s-unbalancedSVM] - C: %f prior: %.1f, minDCF: %.3f" % (kernelType, C, prior, minDCFunbalanced[idx]))
     for pi_t in prior_t:
         minDCF = SVM_minDCF(kfold_data, C, pi_t, prior_t, kernelType, gamma, c)
-        print("[%s-balancedSVM] - C: %f prior_T: %.1f minDCF: %.3f" % (kernelType, C, pi_t, minDCF))
+        for idx, prior in enumerate(prior_t):
+            print("[%s-balancedSVM] - C: %f prior: %.1f, p_T: %.1f minDCF: %.3f" % (kernelType, C, prior, pi_t, minDCF[idx]))
 
 
 def plotLinSVM_minDCF(kfold_data, prior_t, pi_t = 0, filename="SVM", save=False, mode = "k-fold"): #pi_t = 0 is unbalanced
@@ -467,15 +469,23 @@ if __name__ == "__main__":
     plotGMM_minDCF(PCA6, prior_t, LBG_mode="tied", filename="GMM-PCA6-tied", save=True)
     print("GMM-PCA6-diag")
     plotGMM_minDCF(PCA6, prior_t, LBG_mode="diag", filename="GMM-PCA6-diag", save=True)
-    '''
+
+    ### Linear LR ####
    
-    print("LR NO PCA")
+    print("LinearLR NO PCA")
     computeLR_minDCF(NOPCA, prior_t, 1e-5)
-    print("LR PCA7")
+    print("LinearLR PCA7")
     computeLR_minDCF(PCA7, prior_t, 1e-5)
-    print("LR NO PCA")
+    print("LinearLR NO PCA")
     computeLR_minDCF(NOPCA, prior_t, 1e-4)
-    print("LR PCA7")
+    print("LinearLR PCA7")
     computeLR_minDCF(PCA7, prior_t, 1e-4)
+    '''
+
+    ### LINEAR SVM ###
+    print("LinSVM noPCA")
+    computeSVM_minDCF(NOPCA, 5*1e-1, prior_t, "linear")
+    computeSVM_minDCF(PCA7, 5*1e-1, prior_t, "linear")
+    
 
     print("ciao")
