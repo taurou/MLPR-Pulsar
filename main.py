@@ -238,8 +238,22 @@ def SVM_kfold(kfold_data, C, pi_t, prior_t, kernelType, gamma = 0.0, c = 0.0, se
 
     return kscores_array, kLTE_array
 
-    
-
+def SVM_actDCF_calibration(kfold_data, C, pi_t, prior_t, kernelType, gamma = 0.0, c = 0.0, selected_prior = None, calibration = False): #if pi_t = 0 -> no SVM balancing #TODO handle k
+    kscores_array, kLTE_array = SVM_kfold(kfold_data, C, pi_t, prior_t, kernelType, gamma, c, selected_prior)
+    if(calibration == True):
+        print("Calibration")
+        calibratedScores = LR.calibrateScores(kscores_array, kLTE_array, l = 1e-4,  pi_t = 0.5).ravel()   #TODO pi_t
+    else:
+        print("uncalibrated scores")
+        calibratedScores = kscores_array
+    minDCF = []
+    actDCF = []
+    model_eval.BayesErrorPlots(kLTE_array, calibratedScores)
+    for idx, prior in enumerate(prior_t):
+        minDCF.append(model_eval.compute_min_Normalized_DCF(kLTE_array, kscores_array, prior, C_fn = 1 , C_fp =  1))
+        actDCF.append(model_eval.computeBinaryNormalizedDCF(kLTE_array, calibratedScores, prior, C_fn = 1 , C_fp =  1))
+        print("[%s-SVM] - C: %f prior: %.1f, p_T: %.1f minDCF: %.3f actDCF: %.3f" % (kernelType, C, prior, pi_t, minDCF[idx], actDCF[idx]))
+    return minDCF, actDCF
 
 def SVM_minDCF(kfold_data, C, pi_t, prior_t, kernelType, gamma = 0.0, c = 0.0, selected_prior = None): #if pi_t = 0 -> no SVM balancing #TODO handle k
 
@@ -251,7 +265,6 @@ def SVM_minDCF(kfold_data, C, pi_t, prior_t, kernelType, gamma = 0.0, c = 0.0, s
         minDCF.append(model_eval.compute_min_Normalized_DCF(kLTE_array, kscores_array, prior, C_fn = 1 , C_fp =  1))
     return minDCF
 
-    #TODO function below
 def computeSVM_minDCF(kfold_data, C, prior_t, kernelType, gamma = 0.0, c = 0.0):
     minDCFunbalanced = SVM_minDCF(kfold_data, C, 0, prior_t, kernelType, gamma, c)
     for idx, prior in enumerate(prior_t):
@@ -490,8 +503,9 @@ if __name__ == "__main__":
 
 
     ### RBF SVM ###
-    computeSVM_minDCF(NOPCA, 1e-1, prior_t,  "RBF", gamma = 1e-1  )
-    computeSVM_minDCF(PCA7, 1e-1, prior_t, "RBF", gamma = 1e-1 )
+    #computeSVM_minDCF(NOPCA, 1e-1, prior_t, "RBF", gamma = 1e-1 )
+    #computeSVM_minDCF(PCA7, 1e-1, prior_t, "RBF", gamma = 1e-1 )
 
+    SVM_actDCF_calibration(NOPCA, 1e-1, 0, prior_t, "RBF", gamma = 1e-1, calibration = False )
 
     print("ciao")
