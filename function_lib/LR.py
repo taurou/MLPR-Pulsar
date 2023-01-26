@@ -37,3 +37,13 @@ def computeLR(DTR, LTR, DTE ,l, pi_t):
     S = (np.dot(Wmin.T, DTE) + Bmin).ravel() #computing the scores array for the found W and b.
     LP = np.int32((S > 0).ravel())
     return S, LP  #label predicted using as threshold 0. 
+
+def calibrateScores(scores, labels, l, pi_t = 0.5):
+    scores = lib.vrow(scores)
+    logRegObj = logRegClass(scores, labels, l, pi_t)
+    (v, _, _) = scipy.optimize.fmin_l_bfgs_b(logRegObj.logreg_obj, np.zeros(len(scores) + 1), approx_grad = True) #passing iprint = 1 makes it print the computing steps 
+    alpha = lib.vcol(v[0:-1]) #this is the value of W found 
+    beta_star = v[-1] #this is the value of b found
+    beta = beta_star - np.log(pi_t/(1-pi_t))
+    return scores*alpha + beta
+
