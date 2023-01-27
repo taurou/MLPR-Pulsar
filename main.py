@@ -537,9 +537,9 @@ def GMM_actDCF_calibration(kfold_data, prior_t, algorithm_iterations, LBG_mode, 
         actDCF.append(model_eval.computeBinaryNormalizedDCF(kLTE_array, kscores_array, prior, C_fn = 1 , C_fp =  1))
         if(calibration == True):
             actDCF_calibrated.append(model_eval.computeBinaryNormalizedDCF(LTE, calibratedScores, prior, C_fn = 1 , C_fp =  1))
-            print("[%s-GMM] - #iterations: %f prior: %.1f, minDCF: %.3f actDCF: %.3f actDCF_calibrated: %.3f" % (LBG_mode, algorithm_iterations, prior, minDCF[idx], actDCF[idx], actDCF_calibrated[idx]))
+            print("[%s-GMM] - #iterations: %d prior: %.1f, minDCF: %.3f actDCF: %.3f actDCF_calibrated: %.3f" % (LBG_mode, algorithm_iterations, prior, minDCF[idx], actDCF[idx], actDCF_calibrated[idx]))
         else:
-            print("[%s-GMM] - #iterations: %f prior: %.1f, minDCF: %.3f actDCF: %.3f" % (LBG_mode, algorithm_iterations, prior, minDCF[idx], actDCF[idx]))
+            print("[%s-GMM] - #iterations: %d prior: %.1f, minDCF: %.3f actDCF: %.3f" % (LBG_mode, algorithm_iterations, prior, minDCF[idx], actDCF[idx]))
     return minDCF, actDCF
 
 def GMM_actDCF_calibration_evaluation(kfold_data, DTR, LTR, DTE, LTE, prior_t, algorithm_iterations, LBG_mode, calibration = False, showPlot = False): #if pi_t = 0 -> no SVM balancing #TODO handle k
@@ -562,9 +562,9 @@ def GMM_actDCF_calibration_evaluation(kfold_data, DTR, LTR, DTE, LTE, prior_t, a
         actDCF.append(model_eval.computeBinaryNormalizedDCF(LTE, scores_LTE, prior, C_fn = 1 , C_fp =  1))
         if(calibration == True):
             actDCF_calibrated.append(model_eval.computeBinaryNormalizedDCF(LTE, calibratedScores, prior, C_fn = 1 , C_fp =  1))
-            print("[%s-GMM] - #iterations: %f prior: %.1f, minDCF: %.3f actDCF: %.3f actDCF_calibrated: %.3f" % (LBG_mode, algorithm_iterations, prior, minDCF[idx], actDCF[idx], actDCF_calibrated[idx]))
+            print("[%s-GMM] - #iterations: %d prior: %.1f, minDCF: %.3f actDCF: %.3f actDCF_calibrated: %.3f" % (LBG_mode, algorithm_iterations, prior, minDCF[idx], actDCF[idx], actDCF_calibrated[idx]))
         else:
-            print("[%s-GMM] - #iterations: %f prior: %.1f, minDCF: %.3f actDCF: %.3f" % (LBG_mode, algorithm_iterations, prior, minDCF[idx], actDCF[idx]))
+            print("[%s-GMM] - #iterations: %d prior: %.1f, minDCF: %.3f actDCF: %.3f" % (LBG_mode, algorithm_iterations, prior, minDCF[idx], actDCF[idx]))
     return minDCF, actDCF
 
 
