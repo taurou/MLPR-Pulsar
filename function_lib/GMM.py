@@ -88,8 +88,8 @@ def GMM_EM_full(X, gmm, psi = 0.1, stop = 1e-6 ):
             newGMM.append((w,mu,sigma))
 
         gmm=newGMM
-        print(new_ll)
-    print(new_ll-old_ll)
+        #print(new_ll)
+    #print(new_ll-old_ll)
     return gmm
 
 def GMM_EM_diag(X, gmm, psi = 0.1, stop = 1e-6 ):
@@ -126,8 +126,8 @@ def GMM_EM_diag(X, gmm, psi = 0.1, stop = 1e-6 ):
             newGMM.append((w,mu,sigma))
 
         gmm=newGMM
-        print(new_ll)
-    print(new_ll-old_ll)
+        #print(new_ll)
+    #print(new_ll-old_ll)
     return gmm
 
 def GMM_EM_tied(X, gmm, psi = 0.1, stop = 1e-6 ):
@@ -168,8 +168,8 @@ def GMM_EM_tied(X, gmm, psi = 0.1, stop = 1e-6 ):
         for i,g in enumerate(newGMM):
             newGMM[i] = (g[0],g[1],sigma_tied)
         gmm=newGMM
-        print(new_ll)
-    print(new_ll-old_ll)
+        #print(new_ll)
+    #print(new_ll-old_ll)
     return gmm
 
 def LBGsplit(gmm, alpha):

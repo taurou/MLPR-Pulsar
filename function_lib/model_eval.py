@@ -42,7 +42,7 @@ def computeBinaryDCFu(eval_L, llratio, pi_1, C_fn, C_fp, threshold = None):
     return BinaryBayesRiskDCFu(confMatr, pi_1, C_fn, C_fp)
 
 #this is a wrapper for DCF
-def computeBinaryNormalizedDCF(eval_L, llratio, pi_1, C_fn, C_fp, threshold = None):
+def computeBinaryNormalizedDCF(eval_L, llratio, pi_1, C_fn, C_fp, threshold = None): #AKA actDCF
     confMatr = BayesBinaryOptimalDecisionConfMatr(eval_L, llratio, pi_1, C_fn, C_fp, threshold)
     return NormalizedBinaryBayesRiskDCF(confMatr, pi_1, C_fn, C_fp)
     

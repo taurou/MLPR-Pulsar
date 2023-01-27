@@ -8,7 +8,6 @@ import function_lib.PCA as PCA
 import function_lib.MVG as MVG
 import function_lib.LR as LR
 import function_lib.GMM as GMM
-import function_lib.GMM_bis as GMMbis
 import function_lib.model_eval as model_eval
 import matplotlib.pyplot as plt
 
@@ -177,7 +176,7 @@ def kfoldMVG(kfold_data, prior_t, MVGmodel ):
     return kscores_array, kLTE_array    
 
 
-def MVG_actDCF_calibration(kfold_data, prior_t, MVGmodel, calibration = False): 
+def MVG_actDCF_calibration(kfold_data, prior_t, MVGmodel, calibration = False, showPlot = False): 
 
     models = {
        "fullMVG" : MVG.logMVG, 
@@ -196,7 +195,8 @@ def MVG_actDCF_calibration(kfold_data, prior_t, MVGmodel, calibration = False):
     minDCF = []
     actDCF = []
     actDCF_calibrated = []
-    model_eval.BayesErrorPlots(kLTE_array, calibratedScores)
+    if showPlot:
+        model_eval.BayesErrorPlots(kLTE_array, calibratedScores)
     for idx, prior in enumerate(prior_t):
         minDCF.append(model_eval.compute_min_Normalized_DCF(kLTE_array, kscores_array, prior, C_fn = 1 , C_fp =  1))
         actDCF.append(model_eval.computeBinaryNormalizedDCF(kLTE_array, kscores_array, prior, C_fn = 1 , C_fp =  1))
@@ -208,6 +208,42 @@ def MVG_actDCF_calibration(kfold_data, prior_t, MVGmodel, calibration = False):
 
     return minDCF, actDCF
 
+
+
+def MVG_actDCF_calibration_evaluation(kfold_data, DTR, LTR, DTE, LTE, prior_t, MVGmodel, calibration = False, showPlot = False): 
+
+    models = {
+       "fullMVG" : MVG.logMVG, 
+       "diagMVG" : MVG.logNaiveBayes, 
+       "tiedDiagMVG" : MVG.TiedCovariance_logNB,
+       "tiedMVG" : MVG.TiedCovariance_logMVG
+    }
+
+    pred_LTE, scores_LTE = models[MVGmodel](DTR, LTR, DTE, LTE, lib.vcol(np.array([1-prior_t, prior_t])))
+
+    
+    if(calibration == True):
+        print("Calibrated evaluation scores")
+        kscores_array, kLTE_array = kfoldMVG(kfold_data, prior_t, models[MVGmodel])
+        calibratedScores = LR.calibrateScores(kscores_array, kLTE_array, l = 1e-4, pi_t = 0.5, evaluation_scores=scores_LTE).ravel()
+    else:
+        print("Uncalibrated evaluation scores")
+        calibratedScores = scores_LTE
+    minDCF = []
+    actDCF = []
+    actDCF_calibrated = []
+    if showPlot:
+        model_eval.BayesErrorPlots(kLTE_array, calibratedScores)
+    for idx, prior in enumerate(prior_t):
+        minDCF.append(model_eval.compute_min_Normalized_DCF(LTE, scores_LTE, prior, C_fn = 1 , C_fp =  1))
+        actDCF.append(model_eval.computeBinaryNormalizedDCF(LTE, scores_LTE, prior, C_fn = 1 , C_fp =  1))
+        if(calibration == True):
+            actDCF_calibrated.append(model_eval.computeBinaryNormalizedDCF(LTE, calibratedScores, prior, C_fn = 1 , C_fp =  1))
+            print("[%s] - prior: %.1f minDCF: %.3f actDCF: %.3f actDCF_calibrated: %.3f" % (MVGmodel, prior, minDCF[idx], actDCF[idx], actDCF_calibrated[idx]))
+        else:
+            print("[%s] - prior: %.1f minDCF: %.3f actDCF: %.3f" % (MVGmodel, prior, minDCF[idx], actDCF[idx]))
+
+    return minDCF, actDCF
 
 
 ######## LINEAR REGRESSION ########
@@ -272,6 +308,32 @@ def LR_actDCF_calibration(kfold_data, pi_t, prior_t, l, calibration = False): #i
             print("[linear-LR] - lambda: %f p_T: %.1f prior: %.1f minDCF: %.3f actDCF: %.3f" % (l, pi_t, prior, minDCF[idx], actDCF[idx]))
     return minDCF, actDCF
         
+def LR_actDCF_calibration_evaluation(kfold_data, DTR, LTR, DTE, LTE, pi_t, prior_t, l, calibration = False, showPlot = False): 
+
+
+    scores_LTE, pred_LTE= LR.computeLR(DTR, LTR, DTE, l, pi_t) 
+
+    if(calibration == True):
+        print("Calibrated evaluation scores")
+        kscores_array, kLTE_array = kfoldLR(kfold_data, pi_t, prior_t, l )
+        calibratedScores = LR.calibrateScores(kscores_array, kLTE_array, l = 1e-4, pi_t = 0.5, evaluation_scores=scores_LTE).ravel()
+    else:
+        print("Uncalibrated evaluation scores")
+        calibratedScores = scores_LTE
+    minDCF = []
+    actDCF = []
+    actDCF_calibrated = []
+    if showPlot:
+        model_eval.BayesErrorPlots(kLTE_array, calibratedScores)
+    for idx, prior in enumerate(prior_t):
+        minDCF.append(model_eval.compute_min_Normalized_DCF(LTE, scores_LTE, prior, C_fn = 1 , C_fp =  1))
+        actDCF.append(model_eval.computeBinaryNormalizedDCF(LTE, scores_LTE, prior, C_fn = 1 , C_fp =  1))
+        if(calibration == True):
+            actDCF_calibrated.append(model_eval.computeBinaryNormalizedDCF(LTE, calibratedScores, prior, C_fn = 1 , C_fp =  1))
+            print("[linear-LR] - lambda: %f p_T: %.1f prior: %.1f minDCF: %.3f actDCF: %.3f actDCF_calibrated: %.3f" % (l, pi_t, prior, minDCF[idx], actDCF[idx], actDCF_calibrated[idx]))
+        else:
+            print("[linear-LR] - lambda: %f p_T: %.1f prior: %.1f minDCF: %.3f actDCF: %.3f" % (l, pi_t, prior, minDCF[idx], actDCF[idx]))
+    return minDCF, actDCF
 
     
 ######## SVM ########
@@ -320,6 +382,41 @@ def SVM_actDCF_calibration(kfold_data, C, pi_t, prior_t, kernelType, gamma = 0.0
             print("[%s-SVM] - C: %f prior: %.1f, p_T: %.1f minDCF: %.3f actDCF: %.3f" % (kernelType, C, prior, pi_t, minDCF[idx], actDCF[idx]))
     return minDCF, actDCF
 
+def SVM_actDCF_calibration_evaluation(kfold_data, DTR, LTR, DTE, LTE, C, pi_t, prior_t, kernelType, gamma = 0.0, c = 0.0, selected_prior = None, calibration = False, showPlot = False): #if pi_t = 0 -> no SVM balancing #TODO handle k
+
+    if(kernelType == "linear"):
+        SVMObj = SVM.SVMClass(DTR, LTR, "linear", k = 1.0, pi_t = pi_t) #use default value k=1
+    elif(kernelType == "quadratic"):
+        SVMObj = SVM.SVMClass(DTR, LTR, "poly", k = 1.0, d = 2.0, c = c, pi_t = pi_t)
+    elif(kernelType == "RBF"):
+        SVMObj = SVM.SVMClass(DTR, LTR, "RBF", k = 1.0, gamma = gamma, pi_t = pi_t) 
+
+    alpha = SVMObj.trainSVM(C)
+    scores_LTE, pred_LTE = SVMObj.compute_labels(alpha, DTE)
+
+    if(calibration == True):
+        print("Calibrated evaluation scores")
+        kscores_array, kLTE_array = SVM_kfold(kfold_data, C, pi_t, prior_t, kernelType, gamma, c, selected_prior)
+        calibratedScores = LR.calibrateScores(kscores_array, kLTE_array, l = 1e-4, pi_t = 0.5, evaluation_scores=scores_LTE).ravel()
+    else:
+        print("Uncalibrated evaluation scores")
+        calibratedScores = scores_LTE
+    minDCF = []
+    actDCF = []
+    actDCF_calibrated = []
+    if showPlot:
+        model_eval.BayesErrorPlots(kLTE_array, calibratedScores)
+    for idx, prior in enumerate(prior_t):
+        minDCF.append(model_eval.compute_min_Normalized_DCF(LTE, scores_LTE, prior, C_fn = 1 , C_fp =  1))
+        actDCF.append(model_eval.computeBinaryNormalizedDCF(LTE, scores_LTE, prior, C_fn = 1 , C_fp =  1))
+        if(calibration == True):
+            actDCF_calibrated.append(model_eval.computeBinaryNormalizedDCF(LTE, calibratedScores, prior, C_fn = 1 , C_fp =  1))
+            print("[%s-SVM] - C: %f prior: %.1f, p_T: %.1f minDCF: %.3f actDCF: %.3f actDCF_calibrated: %.3f" % (kernelType, C, prior, pi_t, minDCF[idx], actDCF[idx], actDCF_calibrated[idx]))
+        else:
+            print("[%s-SVM] - C: %f prior: %.1f, p_T: %.1f minDCF: %.3f actDCF: %.3f" % (kernelType, C, prior, pi_t, minDCF[idx], actDCF[idx]))
+    return minDCF, actDCF
+
+
 def SVM_minDCF(kfold_data, C, pi_t, prior_t, kernelType, gamma = 0.0, c = 0.0, selected_prior = None): #if pi_t = 0 -> no SVM balancing #TODO handle k
 
     kscores_array, kLTE_array = SVM_kfold(kfold_data, C, pi_t, prior_t, kernelType, gamma, c, selected_prior)
@@ -332,12 +429,19 @@ def SVM_minDCF(kfold_data, C, pi_t, prior_t, kernelType, gamma = 0.0, c = 0.0, s
 
 def computeSVM_minDCF(kfold_data, C, prior_t, kernelType, gamma = 0.0, c = 0.0):
     minDCFunbalanced = SVM_minDCF(kfold_data, C, 0, prior_t, kernelType, gamma, c)
+    if kernelType == "quadratic":
+        SVM_string = "c : %f" %(c)
+    elif kernelType == "RBF":
+        SVM_string = "gamma : %f" %(gamma)
+    else:
+        SVM_string = ""
+
     for idx, prior in enumerate(prior_t):
-        print("[%s-unbalancedSVM] - C: %f prior: %.1f, minDCF: %.3f" % (kernelType, C, prior, minDCFunbalanced[idx]))
+        print("[%s-unbalancedSVM] - C: %f prior: %.1f, minDCF: %.3f %s" % (kernelType, C, prior, minDCFunbalanced[idx], SVM_string))
     for pi_t in prior_t:
         minDCF = SVM_minDCF(kfold_data, C, pi_t, prior_t, kernelType, gamma, c)
         for idx, prior in enumerate(prior_t):
-            print("[%s-balancedSVM] - C: %f prior: %.1f, p_T: %.1f minDCF: %.3f" % (kernelType, C, prior, pi_t, minDCF[idx]))
+            print("[%s-balancedSVM] - C: %f prior: %.1f, p_T: %.1f minDCF: %.3f %s" % (kernelType, C, prior, pi_t, minDCF[idx], SVM_string))
 
 
 def plotLinSVM_minDCF(kfold_data, prior_t, pi_t = 0, filename="SVM", save=False, mode = "k-fold"): #pi_t = 0 is unbalanced
@@ -402,10 +506,8 @@ def GMM_minDCF(kfold_data, prior_t, algorithm_iterations=0,  LBG_mode = "full"):
 def computeGMM_minDCF(kfold_data, prior_t, algorithm_iterations, LBG_mode):
     minDCF = GMM_minDCF(kfold_data, prior_t, algorithm_iterations,  LBG_mode )
 
-    for idx, pi_t in enumerate(prior_t):
-        for prior in prior_t:
-            print("[%s-GMM] - #iterations: %d prior: %.1f minDCF: %.3f" % (LBG_mode, algorithm_iterations, prior, minDCF[idx]))
-
+    for idx, prior in enumerate(prior_t):
+        print("[%s-GMM] - #iterations: %d prior: %.1f minDCF: %.3f" % (LBG_mode, algorithm_iterations, prior, minDCF[idx]))
 
 def plotGMM_minDCF(kfold_data, prior_t, LBG_mode,  filename="GMM", save = False,  mode = "k-fold"): #pi_t = 0 is unbalanced
     C = np.arange(0, 6, 1) #range of analysis from 1 to 2**7 components of GMM
@@ -417,6 +519,53 @@ def plotGMM_minDCF(kfold_data, prior_t, LBG_mode,  filename="GMM", save = False,
     C = 2**C #number of components
     plots.plotminDCF(C,minDCF_array, prior_t, "Components", filename, save, logScale=False)
 
+def GMM_actDCF_calibration(kfold_data, prior_t, algorithm_iterations, LBG_mode, calibration = False): #if pi_t = 0 -> no SVM balancing #TODO handle k
+    kscores_array, kLTE_array = GMM_kfold(kfold_data, prior_t, algorithm_iterations,  LBG_mode)
+
+    if(calibration == True):
+        print("Calibrated scores")
+        calibratedScores = LR.calibrateScores(kscores_array, kLTE_array, l = 1e-4, pi_t = 0.5).ravel()
+    else:
+        print("Uncalibrated scores")
+        calibratedScores = kscores_array
+    minDCF = []
+    actDCF = []
+    actDCF_calibrated = []
+    model_eval.BayesErrorPlots(kLTE_array, calibratedScores)
+    for idx, prior in enumerate(prior_t):
+        minDCF.append(model_eval.compute_min_Normalized_DCF(kLTE_array, kscores_array, prior, C_fn = 1 , C_fp =  1))
+        actDCF.append(model_eval.computeBinaryNormalizedDCF(kLTE_array, kscores_array, prior, C_fn = 1 , C_fp =  1))
+        if(calibration == True):
+            actDCF_calibrated.append(model_eval.computeBinaryNormalizedDCF(LTE, calibratedScores, prior, C_fn = 1 , C_fp =  1))
+            print("[%s-GMM] - #iterations: %f prior: %.1f, minDCF: %.3f actDCF: %.3f actDCF_calibrated: %.3f" % (LBG_mode, algorithm_iterations, prior, minDCF[idx], actDCF[idx], actDCF_calibrated[idx]))
+        else:
+            print("[%s-GMM] - #iterations: %f prior: %.1f, minDCF: %.3f actDCF: %.3f" % (LBG_mode, algorithm_iterations, prior, minDCF[idx], actDCF[idx]))
+    return minDCF, actDCF
+
+def GMM_actDCF_calibration_evaluation(kfold_data, DTR, LTR, DTE, LTE, prior_t, algorithm_iterations, LBG_mode, calibration = False, showPlot = False): #if pi_t = 0 -> no SVM balancing #TODO handle k
+    scores_LTE, pred_LTE = GMM.GMMBinaryclassification(DTR,LTR,DTE,algorithm_iterations, LBG_mode )
+
+    if(calibration == True):
+        print("Calibrated evaluation scores")
+        kscores_array, kLTE_array = GMM_kfold(kfold_data, prior_t, algorithm_iterations,  LBG_mode)
+        calibratedScores = LR.calibrateScores(kscores_array, kLTE_array, l = 1e-4, pi_t = 0.5, evaluation_scores=scores_LTE).ravel()
+    else:
+        print("Uncalibrated evaluation scores")
+        calibratedScores = scores_LTE
+    minDCF = []
+    actDCF = []
+    actDCF_calibrated = []
+    if showPlot:
+        model_eval.BayesErrorPlots(kLTE_array, calibratedScores)
+    for idx, prior in enumerate(prior_t):
+        minDCF.append(model_eval.compute_min_Normalized_DCF(LTE, scores_LTE, prior, C_fn = 1 , C_fp =  1))
+        actDCF.append(model_eval.computeBinaryNormalizedDCF(LTE, scores_LTE, prior, C_fn = 1 , C_fp =  1))
+        if(calibration == True):
+            actDCF_calibrated.append(model_eval.computeBinaryNormalizedDCF(LTE, calibratedScores, prior, C_fn = 1 , C_fp =  1))
+            print("[%s-GMM] - #iterations: %f prior: %.1f, minDCF: %.3f actDCF: %.3f actDCF_calibrated: %.3f" % (LBG_mode, algorithm_iterations, prior, minDCF[idx], actDCF[idx], actDCF_calibrated[idx]))
+        else:
+            print("[%s-GMM] - #iterations: %f prior: %.1f, minDCF: %.3f actDCF: %.3f" % (LBG_mode, algorithm_iterations, prior, minDCF[idx], actDCF[idx]))
+    return minDCF, actDCF
 
 
 
@@ -564,13 +713,86 @@ if __name__ == "__main__":
     computeSVM_minDCF(PCA7, 5*1e-1, prior_t, "linear")
     '''
 
+    ### QUAD SVM ###
+    #computeSVM_minDCF(NOPCA, 1e-3, prior_t, "quadratic", c = 10.0 )
+    #computeSVM_minDCF(PCA7, 1e-3, prior_t, "quadratic", c = 10.0 )
+
 
     ### RBF SVM ###
     #computeSVM_minDCF(NOPCA, 1e-1, prior_t, "RBF", gamma = 1e-1 )
     #computeSVM_minDCF(PCA7, 1e-1, prior_t, "RBF", gamma = 1e-1 )
 
+    ### GMM NO PCA ###
+    #print("NO PCA")
+    #computeGMM_minDCF(NOPCA, prior_t, 4, "full")
+    #computeGMM_minDCF(NOPCA, prior_t, 4, "diag")
+    #computeGMM_minDCF(NOPCA, prior_t, 3, "tied")
+    ### GMM PCA = 7 ###
+    #print("PCA = 7")
+    #computeGMM_minDCF(PCA7, prior_t, 4, "full")
+    #computeGMM_minDCF(PCA7, prior_t, 2, "diag")
+    #computeGMM_minDCF(PCA7, prior_t, 3, "tied")
+
+
+    #### SCORE CALIBRATION ####pyt
+
+
     #SVM_actDCF_calibration(NOPCA, 1e-1, 0, prior_t, "RBF", gamma = 1e-1, calibration = False )
     #LR_actDCF_calibration(NOPCA, 0.5, prior_t, 1e-5, calibration = True)
-    MVG_actDCF_calibration(NOPCA, prior_t, "tiedMVG", calibration = True)
+    #MVG_actDCF_calibration(NOPCA, prior_t, "tiedMVG", calibration = True)
+
+
+
+    #### EVALUATION ####
+
+
+    DTE, LTE = load("dataset/Test.txt")
+    DTRz, DTEz = z_normalize(DTR, DTE)
+    DTRz_PCA7, DTEz_PCA7 = PCA.compute_PCA(7, DTRz, DTEz)
+
+    '''
+    print("NO PCA Evaluation")
+    MVG_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, prior_t, "fullMVG", calibration = True) 
+    MVG_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, prior_t, "diagMVG", calibration = True) 
+    MVG_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, prior_t, "tiedDiagMVG", calibration = True) 
+    MVG_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, prior_t, "tiedMVG", calibration = True) 
+    
+
+    for prior in prior_t:
+        LR_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, 0, prior_t, 1e-5, calibration = True)
+
+    print("unbalanced SVM")
+    SVM_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, 1e-1, prior, prior_t, "RBF", gamma = 1e-1, calibration = True )
+    print("balanced SVM")
+    for prior in prior_t:
+        SVM_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, 1e-1, prior, prior_t, "RBF", gamma = 1e-1, calibration = True )
+    '''
+    GMM_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, prior_t, 4, "full", calibration = False)
+    GMM_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, prior_t, 4, "diag", calibration = False)
+    GMM_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, prior_t, 3, "tied", calibration = False)
+
+
+    '''
+    print("PCA7 Evaluation")
+    MVG_actDCF_calibration_evaluation(PCA7,DTRz, LTR, DTEz, LTE, prior_t, "fullMVG", calibration = True) 
+    MVG_actDCF_calibration_evaluation(PCA7,DTRz, LTR, DTEz, LTE, prior_t, "diagMVG", calibration = True) 
+    MVG_actDCF_calibration_evaluation(PCA7,DTRz, LTR, DTEz, LTE, prior_t, "tiedDiagMVG", calibration = True) 
+    MVG_actDCF_calibration_evaluation(PCA7,DTRz, LTR, DTEz, LTE, prior_t, "tiedMVG", calibration = True) 
+    
+
+    for prior in prior_t:
+        LR_actDCF_calibration_evaluation(PCA7,DTRz, LTR, DTEz, LTE, 0, prior_t, 1e-5, calibration = True)
+
+    print("unbalanced SVM")
+    SVM_actDCF_calibration_evaluation(PCA7,DTRz, LTR, DTEz, LTE, 1e-1, prior, prior_t, "RBF", gamma = 1e-1, calibration = True )
+    print("balanced SVM")
+    for prior in prior_t:
+        SVM_actDCF_calibration_evaluation(PCA7,DTRz, LTR, DTEz, LTE, 1e-1, prior, prior_t, "RBF", gamma = 1e-1, calibration = True )
+    
+    GMM_actDCF_calibration_evaluation(PCA7,DTRz, LTR, DTEz, LTE, prior_t, 4, "full", calibration = False)
+    GMM_actDCF_calibration_evaluation(PCA7,DTRz, LTR, DTEz, LTE, prior_t, 2, "diag", calibration = False)
+    GMM_actDCF_calibration_evaluation(PCA7,DTRz, LTR, DTEz, LTE, prior_t, 3, "tied", calibration = False)
+    '''
+
 
     print("ciao")
