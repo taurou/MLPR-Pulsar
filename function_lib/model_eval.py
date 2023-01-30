@@ -56,26 +56,25 @@ def compute_min_Normalized_DCF(eval_L, scores, pi_1, C_fn, C_fp): #the scores ar
         DCF_list.append(computeBinaryNormalizedDCF(eval_L, scores, pi_1, C_fn, C_fp, th))
     return np.min(DCF_list)
 
-def plotROC_curves(eval_L, llratio):
-    #compute ROC curves
-    t = np.array(llratio)
-    #append -inf and +inf
-    t.sort()
-    t = np.concatenate([np.array([-np.inf]), t , np.array([np.inf])])
-    FNR_t = np.zeros(t.size)
-    FPR_t = np.zeros(t.size)
-    for idx, th in enumerate(t):
-        (FNR_t[idx], FPR_t[idx]) = computeFNR_FPR(eval_L, llratio, threshold = th )
-    TNR_t = 1 - FPR_t
-    TPR_t = 1 - FNR_t
+def plotROC_curves(eval_L, llratio, label):
     plt.figure()
-    plt.plot(FPR_t, TPR_t)
     plt.xlabel("FPR")
     plt.ylabel("TPR")
-    plt.figure()
-    plt.plot(FNR_t, TNR_t)
-    plt.xlabel("FNR")
-    plt.ylabel("TNR")
+    colours = ['r','y','k','g','b']
+
+    for i, score in enumerate(llratio):
+        #compute ROC curves
+        t = np.array(score)
+        #append -inf and +inf
+        t.sort()
+        t = np.concatenate([np.array([-np.inf]), t , np.array([np.inf])])
+        FNR_t = np.zeros(t.size)
+        FPR_t = np.zeros(t.size)
+        for idx, th in enumerate(t):
+            (FNR_t[idx], FPR_t[idx]) = computeFNR_FPR(eval_L, score, threshold = th )
+        TPR_t = 1 - FNR_t
+        plt.plot(FPR_t, TPR_t, label=label[i], color=colours[i])
+    plt.legend(label)
 
     plt.show()
 
