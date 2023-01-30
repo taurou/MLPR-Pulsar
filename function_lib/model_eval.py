@@ -79,7 +79,7 @@ def plotROC_curves(eval_L, llratio):
 
     plt.show()
 
-def BayesErrorPlots(eval_L, llratio, range_start = -3, range_end = 3, num_points = 21):
+def BayesErrorPlots(eval_L, llratio, range_start = -3, range_end = 3, num_points = 21, title = ""):
     effPriorLogOdds = np.linspace(range_start, range_end, num_points)
     effPrior = 1 / ( 1 + np.exp(-effPriorLogOdds) )
 
@@ -89,7 +89,8 @@ def BayesErrorPlots(eval_L, llratio, range_start = -3, range_end = 3, num_points
     for idx, pi in enumerate(effPrior):
         DCF[idx] = computeBinaryNormalizedDCF(eval_L, llratio, pi, 1, 1)
         minDCF[idx] = compute_min_Normalized_DCF(eval_L, llratio, pi, 1, 1)
-    
+    plt.figure()
+    plt.title(title)
     plt.plot(effPriorLogOdds, DCF, label='DCF', color='r')
     plt.plot(effPriorLogOdds, minDCF, label='min DCF', color='b')
     plt.ylim([0, 1.1])
