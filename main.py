@@ -1,7 +1,6 @@
 import numpy as np
 import function_lib.lib as lib
 import function_lib.SVM as SVM
-import function_lib.SVM_bis as SVM_bis
 import function_lib.plots as plots
 from scipy.stats import norm #TODO remove if I move gaussianize func
 import math
@@ -741,7 +740,7 @@ if __name__ == "__main__":
 
 
 
-
+    
     print("calibrated actDCF for NO PCA models")
     SVM_actDCF_calibration(NOPCA, 1e-3, 0.1, prior_t, "quadratic", c = 10, calibration = True, title = "quadSVM, noPCA, calibrated" )
 
@@ -750,8 +749,8 @@ if __name__ == "__main__":
     MVG_actDCF_calibration(PCA7, prior_t, "tiedMVG", calibration = True, title= "MVG tied, PCA7, calibrated")
     LR_actDCF_calibration(PCA7, 0.5, prior_t, 1e-4, calibration = True, title = "linear LR. PCA7, calibrated" )
     SVM_actDCF_calibration(PCA7, 5*1e-1, 0.1, prior_t, "linear", calibration = True, title = "linSVM, PCA7, calibrated" )
+    
     '''
-
     #### EVALUATION ####
 
 
@@ -763,12 +762,12 @@ if __name__ == "__main__":
     title_array = []
 
 
-    print("calibrated evalution actDCF for NO PCA models")
+    print("calibrated evalution actDCF for the best NO PCA models")
     score = SVM_actDCF_calibration_evaluation(NOPCA, DTRz, LTR, DTEz, LTE, 1e-3, 0.1, prior_t, "quadratic", c = 10, calibration = True)
     scores_array.append(score)
     title_array.append("quadSVM")
 
-    print("calibrated evalution actDCF for PCA m = 7 models")
+    print("calibrated evalution actDCF for the best PCA m = 7 models")
     score = MVG_actDCF_calibration_evaluation(PCA7, DTRz, LTR, DTEz, LTE, prior_t, "tiedMVG", calibration = True)
     scores_array.append(score)
     title_array.append("MVG")
@@ -795,50 +794,50 @@ if __name__ == "__main__":
 
 
 
-
+    print("Evaluation on all models")
     print("NO PCA Evaluation")
-    MVG_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, prior_t, "fullMVG", calibration = True) 
-    MVG_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, prior_t, "diagMVG", calibration = True) 
-    MVG_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, prior_t, "tiedDiagMVG", calibration = True) 
-    MVG_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, prior_t, "tiedMVG", calibration = True) 
+    MVG_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, prior_t, "fullMVG") 
+    MVG_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, prior_t, "diagMVG") 
+    MVG_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, prior_t, "tiedDiagMVG") 
+    MVG_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, prior_t, "tiedMVG") 
     
 
     for prior in prior_t:
-        LR_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, prior, prior_t, 1e-5, calibration = True)
+        LR_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, prior, prior_t, 1e-4)
 
     print("unbalanced SVM")
-    SVM_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, 5*1e-1, 0, prior_t, "linear", calibration = True )
+    SVM_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, 5*1e-1, 0, prior_t, "linear" )
     print("balanced SVM")
     for prior in prior_t:
-        SVM_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, 5*1e-1, prior, prior_t, "linear", calibration = True )
+        SVM_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, 5*1e-1, prior, prior_t, "linear" )
 
     print("unbalanced SVM")
-    SVM_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, 1e-3, 0, prior_t, "quadratic", c = 10, calibration = True )
+    SVM_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, 1e-3, 0, prior_t, "quadratic", c = 10 )
     print("balanced SVM")
     for prior in prior_t:
-        SVM_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, 1e-3, prior, prior_t, "quadratic", c = 10, calibration = True )
+        SVM_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, 1e-3, prior, prior_t, "quadratic", c = 10 )
 
     print("unbalanced SVM")
-    SVM_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, 1e-1, 0, prior_t, "RBF", gamma = 1e-1, calibration = True )
+    SVM_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, 1e-1, 0, prior_t, "RBF", gamma = 1e-1 )
     print("balanced SVM")
     for prior in prior_t:
-        SVM_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, 1e-1, prior, prior_t, "RBF", gamma = 1e-1, calibration = True )
+        SVM_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, 1e-1, prior, prior_t, "RBF", gamma = 1e-1 )
 
-    GMM_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, prior_t, 4, "full", calibration = True)
-    GMM_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, prior_t, 4, "diag", calibration = True)
-    GMM_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, prior_t, 3, "tied", calibration = True)
+    GMM_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, prior_t, 4, "full")
+    GMM_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, prior_t, 4, "diag")
+    GMM_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, prior_t, 3, "tied")
 
 
     
     print("PCA7 Evaluation")
-    MVG_actDCF_calibration_evaluation(PCA7,DTRz, LTR, DTEz, LTE, prior_t, "fullMVG", calibration = True) 
-    MVG_actDCF_calibration_evaluation(PCA7,DTRz, LTR, DTEz, LTE, prior_t, "diagMVG", calibration = True) 
-    MVG_actDCF_calibration_evaluation(PCA7,DTRz, LTR, DTEz, LTE, prior_t, "tiedDiagMVG", calibration = True) 
-    MVG_actDCF_calibration_evaluation(PCA7,DTRz, LTR, DTEz, LTE, prior_t, "tiedMVG", calibration = True) 
+    MVG_actDCF_calibration_evaluation(PCA7,DTRz, LTR, DTEz, LTE, prior_t, "fullMVG") 
+    MVG_actDCF_calibration_evaluation(PCA7,DTRz, LTR, DTEz, LTE, prior_t, "diagMVG") 
+    MVG_actDCF_calibration_evaluation(PCA7,DTRz, LTR, DTEz, LTE, prior_t, "tiedDiagMVG") 
+    MVG_actDCF_calibration_evaluation(PCA7,DTRz, LTR, DTEz, LTE, prior_t, "tiedMVG") 
     
 
     for prior in prior_t:
-        LR_actDCF_calibration_evaluation(PCA7,DTRz, LTR, DTEz, LTE, prior, prior_t, 1e-5, calibration = True)
+        LR_actDCF_calibration_evaluation(PCA7,DTRz, LTR, DTEz, LTE, prior, prior_t, 1e-4, calibration = True)
 
     print("unbalanced SVM")
     SVM_actDCF_calibration_evaluation(PCA7,DTRz, LTR, DTEz, LTE, 5*1e-1, 0, prior_t, "linear", calibration = True )
