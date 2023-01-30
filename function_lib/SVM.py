@@ -25,16 +25,11 @@ class SVMClass:
             kernel = self.compute_RBFKernel(self.X, self.X, gamma, k)
         self.H = kernel * lib.vrow(self.Z) * lib.vcol(self.Z)
 
-    def compute_LinearG(self):
-        X = np.vstack([self.X, np.ones((1,self.X.shape[1]))*self.k ]) 
-        G = np.dot(X.T, X)
-        return X, G                             
 
     def compute_PolyKernel(self, X1, X2, c, d, k):
         return (np.dot(X1.T, X2) + c)**d + k**2
 
     def compute_RBFKernel(self, X1, X2, gamma, k): #TODO optimize distance computing
-        kernel = np.zeros((X1.shape[1], X2.shape[1]))
         distances = lib.vcol((X1 ** 2).sum(axis = 0)) + lib.vrow((X2 ** 2).sum(axis = 0)) - 2 * np.dot(X1.T, X2)
         kernel = np.exp(-gamma * distances)
         return kernel + k**2

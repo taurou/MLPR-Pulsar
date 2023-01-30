@@ -90,83 +90,11 @@ def BayesErrorPlots(eval_L, llratio, range_start = -3, range_end = 3, num_points
         minDCF[idx] = compute_min_Normalized_DCF(eval_L, llratio, pi, 1, 1)
     plt.figure()
     plt.title(title)
-    plt.plot(effPriorLogOdds, DCF, label='DCF', color='r')
-    plt.plot(effPriorLogOdds, minDCF, label='min DCF', color='b')
+    plt.plot(effPriorLogOdds, DCF, label='actDCF', color='r')
+    plt.plot(effPriorLogOdds, minDCF, label='minDCF', color='b', linestyle='dashed')
+    plt.legend(["actDCF", "minDCF"])
     plt.ylim([0, 1.1])
     plt.xlim([range_start, range_end])
     plt.xlabel("prior log-odds")
     plt.ylabel("min DCF")
     plt.show()
-
-
-if __name__ == "__main__":
-    '''D, L = lib.load_iris()
-    (train_D, train_L), (eval_D, eval_L) = lib.split_db_2to1(D,L)
-    prior = lib.vcol(np.array([1.0/3.0, 1.0/3.0, 1.0/3.0]))
-    IRISMVGprediction = MVG.logMVG(train_D, train_L, eval_D, eval_L, prior)
-    IRISTiedMVGprediction = MVG.TiedCovariance_logMVG(train_D, train_L, eval_D, eval_L, prior)
-    IRISconfMatrMVG = generateConfusionMatrix(eval_L, IRISMVGprediction)
-    IRISconfMatrTiedMVG = generateConfusionMatrix(eval_L, IRISTiedMVGprediction)
-    print("Iris MVG:\n", IRISconfMatrMVG)
-    print("Iris Tied MVG:\n", IRISconfMatrTiedMVG )
-    
-    #Import DATA for commedia
-    commedia_logLikelihoods = np.load('./8_Bayes_Decisions_Model_Evaluation/Data/commedia_ll.npy')
-    commedia_Labels = np.load('./8_Bayes_Decisions_Model_Evaluation/Data/commedia_labels.npy')
-    commedia_Logjoint = commedia_logLikelihoods + np.log(1.0/3.0)
-    commedia_llMarginal = scipy.special.logsumexp(commedia_Logjoint, axis = 0)
-    commedia_posterior = np.exp(commedia_Logjoint - commedia_llMarginal)
-    commedia_prediction = np.argmax(commedia_posterior, axis=0)
-    commediaConfMatr = generateConfusionMatrix(commedia_Labels, commedia_prediction)
-    print("Commedia:\n", commediaConfMatr)
-
-
-
-
-#BINARY TASK: OPTIMAIL DECISIONS
-    llratio = np.load('./8_Bayes_Decisions_Model_Evaluation/Data/commedia_llr_infpar.npy') #llr predictions
-    eval_L = np.load('./8_Bayes_Decisions_Model_Evaluation/Data/commedia_labels_infpar.npy') #evaluation labels
-    
-    #prior = lib.vcol(np.array([1 - prior_1, prior_1]))
-    #commedia_Logjoint = commedia_llr_infpar + np.log(prior)
-    #commedia_llMarginal = scipy.special.logsumexp(commedia_Logjoint, axis = 0)
-    #commedia_posterior = np.exp(commedia_Logjoint - commedia_llMarginal)
-    BayesConfMatr = BayesBinaryOptimalDecisionConfMatr(eval_L, llratio, pi_1 = 0.5, C_fn = 1 , C_fp = 1)
-    print("BayesConfMatr_pi0.5_C[1,1]: \n" , BayesConfMatr)
-    DCFu = BinaryBayesRiskDCFu(BayesConfMatr, pi_1 = 0.5, C_fn = 1 , C_fp = 1)
-    DCF = NormalizedBinaryBayesRiskDCF(BayesConfMatr, pi_1 = 0.5, C_fn = 1 , C_fp = 1)
-    print("DCFu: ", DCFu, "DCF: ", DCF)
-    BayesConfMatr = BayesBinaryOptimalDecisionConfMatr(eval_L, llratio, pi_1 = 0.5, C_fn = 10 , C_fp = 1)
-    print("BayesConfMatr_pi0.5_C[10,1]: \n" , BayesConfMatr)
-    DCFu = BinaryBayesRiskDCFu(BayesConfMatr, pi_1 = 0.5, C_fn = 10 , C_fp = 1)
-    DCF = NormalizedBinaryBayesRiskDCF(BayesConfMatr, pi_1 = 0.5, C_fn = 10 , C_fp = 1)
-    print("DCFu: ", DCFu, "DCF: ", DCF)
-    BayesConfMatr = BayesBinaryOptimalDecisionConfMatr(eval_L, llratio, pi_1 = 0.8, C_fn = 1 , C_fp = 1)
-    print("BayesConfMatr_pi0.8_C[1,1]: \n" , BayesConfMatr)
-    DCFu = BinaryBayesRiskDCFu(BayesConfMatr, pi_1 = 0.8, C_fn = 1 , C_fp = 1)
-    DCF = NormalizedBinaryBayesRiskDCF(BayesConfMatr, pi_1 = 0.8, C_fn = 1 , C_fp = 1)
-    print("DCFu: ", DCFu, "DCF: ", DCF)
-    BayesConfMatr = BayesBinaryOptimalDecisionConfMatr(eval_L, llratio, pi_1 = 0.8, C_fn = 1 , C_fp = 10)
-    print("BayesConfMatr_pi0.8_C[1,10]: \n" , BayesConfMatr)
-    #same but using the wrapper functions
-    DCFu = computeBinaryDCFu(eval_L, llratio, pi_1 = 0.8, C_fn = 1 , C_fp = 10)
-    DCF = computeBinaryNormalizedDCF(eval_L, llratio, pi_1 = 0.8, C_fn = 1 , C_fp = 10)
-    print("DCFu: ", DCFu, "DCF: ", DCF)
-
-    #minimum detection cost 
-
-    llratio = np.load('./8_Bayes_Decisions_Model_Evaluation/Data/commedia_llr_infpar.npy')
-    eval_L = np.load('./8_Bayes_Decisions_Model_Evaluation/Data/commedia_labels_infpar.npy') #evaluation labels
-    scores = llratio #the scores correspont to the ll ratios returned by the classifier
-
-    print(compute_min_Normalized_DCF(eval_L, scores, 0.5, 1, 1))
-    print(compute_min_Normalized_DCF(eval_L, scores, 0.8, 1, 1))
-    print(compute_min_Normalized_DCF(eval_L, scores, 0.5, 10, 1))
-    print(compute_min_Normalized_DCF(eval_L, scores, 0.8, 1, 10))
-
-    #plot ROC curves for TNR/FNR and TPR/FNR
-    plotROC_curves(eval_L, llratio)
-    #plot bayes errors
-    BayesErrorPlots(eval_L, llratio)
-        
-'''
