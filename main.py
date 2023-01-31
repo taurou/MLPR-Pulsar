@@ -593,9 +593,9 @@ if __name__ == "__main__":
     DTR, LTR = load("dataset/Train.txt")
     print("\nPlotting the raw features")
 
-    plots.plot_hist(DTR,LTR, "raw dataset", "plots/1_RawDataset", True)
+    plots.plot_hist(DTR,LTR, "raw dataset", "plots/1_RawDataset")
     #DTR_gau = gaussianize(DTR)  #I decided not to use gaussianization because the it might be useless for this dataset 
-    #plots.plot_hist(DTR_gau,LTR, "gaussianised dataset" , "plots/2_GaussianizedDataset", True)
+    #plots.plot_hist(DTR_gau,LTR, "gaussianised dataset" , "plots/2_GaussianizedDataset")
 
     ###################################
     #   Z-normalizing the dataset     #
@@ -603,13 +603,13 @@ if __name__ == "__main__":
 
     DTR_z = z_normalize(DTR)  
     print("\nPlotting the Z-normalized features")  
-    plots.plot_hist(DTR_z, LTR, "Z-Norm", "plots/3_zNormDataset", True)
+    plots.plot_hist(DTR_z, LTR, "Z-Norm", "plots/3_zNormDataset")
 
     ###########################
     #  plotting the heatmap   #
     ###########################
     print("\nplotting the heatmap showing correlations between the features")
-    plots.heatmap(DTR_z, LTR,  "Heatmap, Z-norm dataset", "heatmap", True)
+    plots.heatmap(DTR_z, LTR,  "Heatmap, Z-norm dataset", "heatmap")
 
     ###################################
     #  Setting up K-folds with k = 3  #
