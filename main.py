@@ -588,7 +588,7 @@ def GMM_actDCF_calibration_evaluation(kfold_data, DTR, LTR, DTE, LTE, prior_t, a
 
 if __name__ == "__main__":
 
-    PlotMinDCF = False
+    PlotMinDCF = True
 
     DTR, LTR = load("dataset/Train.txt")
     print("\nPlotting the raw features")
