@@ -11,7 +11,15 @@ import function_lib.GMM as GMM
 import function_lib.model_eval as model_eval
 import matplotlib.pyplot as plt
 
-######## DATA LOADING AND PREPARATION ########
+#####################
+# UTILITY FUNCTIONS #
+#####################
+
+
+################################
+# DATA LOADING AND PREPARATION #
+################################
+
 def load(fname):
     DList = []
     labelsList = []
@@ -107,7 +115,9 @@ def KfoldsGenerator(D, L, k, seed=0): #passing the classifier function
     
     return (singleNOPCA, singlePCA5, singlePCA6, singlePCA7) , (NOPCA, PCA5, PCA6, PCA7)
 
-######## MVG ########
+###################
+#  MVG UTILITIES  #
+###################
 
 def MVGwrapper(data, prior, mode = "k-fold", k = 0):
 
@@ -246,7 +256,9 @@ def MVG_actDCF_calibration_evaluation(kfold_data, DTR, LTR, DTE, LTE, prior_t, M
     return scores_LTE
 
 
-######## LINEAR REGRESSION ########
+###################
+#  LR UTILITIES   #
+###################
 
 def kfoldLR(kfold_data, pi_t, prior_t, l ):
     K_scores = []
@@ -336,7 +348,9 @@ def LR_actDCF_calibration_evaluation(kfold_data, DTR, LTR, DTE, LTE, pi_t, prior
     return scores_LTE
 
     
-######## SVM ########
+###################
+#  SVM UTILITIES  #
+###################
 
 def SVM_kfold(kfold_data, C, pi_t, prior_t, kernelType, gamma = 0.0, c = 0.0, selected_prior = None):
     K_scores = []
@@ -454,7 +468,7 @@ def plotLinSVM_minDCF(kfold_data, prior_t, pi_t = 0, filename="SVM", save=False,
     plots.plotminDCF(C,minDCF_array, prior_t, "C", filename, save)
     
 
-######## Quad + RBF SVM ########
+######## Quad + RBF SVM MINDCF PLOTS ########
 
 
 def plotRBFSVM_minDCF(kfold_data, prior_t, selected_prior, pi_t = 0, filename="SVM", save=False, mode = "k-fold"): #pi_t = 0 is unbalanced
@@ -479,7 +493,9 @@ def plotQuadraticSVM_minDCF(kfold_data, prior_t, selected_prior, pi_t = 0, filen
             c_minDCF[c_idx].append(minDCF)
     plots.plotminDCF_kernelSVM(C, c_minDCF, c_range, selected_prior, "quadratic", filename, save)
 
-######## GMM ########
+###################
+#  GMM UTILITIES  #
+###################
 def GMM_kfold(kfold_data, prior_t, algorithm_iterations=0,  LBG_mode = "full"):
     K_scores = []
     K_LTE = []
@@ -571,189 +587,234 @@ def GMM_actDCF_calibration_evaluation(kfold_data, DTR, LTR, DTE, LTE, prior_t, a
 
 
 if __name__ == "__main__":
+
+    PlotMinDCF = False
+
     DTR, LTR = load("dataset/Train.txt")
-    #plots.plot_hist(DTR,LTR, "raw dataset", "plots/1_RawDataset", True)
-    # DTR_gau = gaussianize(DTR)
+    print("Plotting the raw features")
+    plots.plot_hist(DTR,LTR, "raw dataset", "plots/1_RawDataset", True)
+    #DTR_gau = gaussianize(DTR)  #I decided not to use gaussianization because the it might be useless for this dataset 
     #plots.plot_hist(DTR_gau,LTR, "gaussianised dataset" , "plots/2_GaussianizedDataset", True)
-    DTR_z = z_normalize(DTR) #TODO maybe move it to kfold function and perform it on the DTR of the fold.
-    #TODO maybe also perform PCS 
-    #plots.plot_hist(DTR_z, LTR, "Z-Norm", "plots/3_zNormDataset", True)
 
-    #plots.heatmap(DTR_z, LTR,  "Heatmap, Z-norm dataset", "heatmap", True)
+    ###################################
+    #   Z-normalizing the dataset     #
+    ###################################
 
-    #plots.plot_correlations(DTR_z, LTR)
+    DTR_z = z_normalize(DTR)  
+    print("Plotting the Z-normalized features")  
+    plots.plot_hist(DTR_z, LTR, "Z-Norm", "plots/3_zNormDataset", True)
 
-    #Create the K-folds 
+    ###########################
+    #  plotting the heatmap   #
+    ###########################
+    print("plotting the heatmap showing correlations between the features")
+    plots.heatmap(DTR_z, LTR,  "Heatmap, Z-norm dataset", "heatmap", True)
+
+    ###################################
+    #  Setting up K-folds with k = 3  #
+    ###################################
+
     k = 3 #num of folds
+    
     singleFoldData, kFoldData = (singleNOPCA, singlePCA5, singlePCA6, singlePCA7) , (NOPCA, PCA5, PCA6, PCA7) = KfoldsGenerator(DTR,LTR, k)
 
     prior_t = np.array([0.5, 0.1, 0.9])
     
+    #########
+    #  MVG  #
+    #########
 
+    print("Computing the MVG for no PCA dataset, and also for PCA with m from 7 to 5 ")
+    MVGwrapper(kFoldData, prior_t, mode = "k-fold", k = k)
 
+    if (PlotMinDCF is True):
+        ######################################################
+        #  Linear Logistic Regression - parameter selection  #
+        ######################################################
+        
+        print("Plotting the minDCF in order to choose the right lambda for the logistic regression with NO PCA and p_T = 0.5")
+        plotLR_minDCF(NOPCA, prior_t, 0.5, "LR-Full-πT=0.5")
 
-    #MVGwrapper(singleFoldData, prior_t, mode = "single-fold")
-    #MVGwrapper(kFoldData, prior_t, mode = "k-fold", k = k)
+        print("Plotting the minDCF in order to choose the right lambda for the logistic regression with PCA m = 7 and p_T = 0.5")
+        plotLR_minDCF(PCA7, prior_t, 0.5,  "LR-PCA7-πT=0.5")
 
+        print("Plotting the minDCF in order to choose the right lambda for the logistic regression with NO PCA and p_T = 0.1")
+        plotLR_minDCF(NOPCA, prior_t, 0.1, "LR-Full-πT=0.1")
 
-    '''
-    plotLR_minDCF(NOPCA, prior_t, 0.5, "LR-Full-πT=0.5", True )
-    plotLR_minDCF(PCA5, prior_t, 0.5,  "LR-PCA5-πT=0.5", True)
-    plotLR_minDCF(PCA6, prior_t, 0.5,  "LR-PCA6-πT=0.5", True)
-    plotLR_minDCF(PCA7, prior_t, 0.5,  "LR-PCA7-πT=0.5", True)
+        print("Plotting the minDCF in order to choose the right lambda for the logistic regression with PCA m = 7 and p_T = 0.1")
+        plotLR_minDCF(PCA7, prior_t, 0.1,  "LR-PCA7-πT=0.1")
 
-    plotLR_minDCF(NOPCA, prior_t, 0.1, "LR-Full-πT=0.1", True )
-    plotLR_minDCF(PCA5, prior_t, 0.1,  "LR-PCA5-πT=0.1", True)
-    plotLR_minDCF(PCA6, prior_t, 0.1,  "LR-PCA6-πT=0.1", True)
-    plotLR_minDCF(PCA7, prior_t, 0.1,  "LR-PCA7-πT=0.1", True)
+        print("Plotting the minDCF in order to choose the right lambda for the logistic regression with NO PCA and p_T = 0.9")
+        plotLR_minDCF(NOPCA, prior_t, 0.9, "LR-Full-πT=0.9")
 
-    plotLR_minDCF(NOPCA, prior_t, 0.9, "LR-Full-πT=0.9", True )
-    plotLR_minDCF(PCA5, prior_t, 0.9,  "LR-PCA5-πT=0.9", True)
-    plotLR_minDCF(PCA6, prior_t, 0.9,  "LR-PCA6-πT=0.9", True)
-    plotLR_minDCF(PCA7, prior_t, 0.9,  "LR-PCA7-πT=0.9", True)
-    
-    print("SVM-Full-unbalanced")
-    plotLinSVM_minDCF(NOPCA, prior_t, 0.0, "SVM-Full-unbalanced", True)
-    print("SVM-PCA5-unbalanced")
-    plotLinSVM_minDCF(PCA5, prior_t, 0.0, "SVM-PCA5-unbalanced", True)
-    print("SVM-PCA6-unbalanced")
-    plotLinSVM_minDCF(PCA6, prior_t, 0.0, "SVM-PCA6-unbalanced", True)
-    print("SVM-PCA7-unbalanced")
-    plotLinSVM_minDCF(PCA7, prior_t, 0.0, "SVM-PCA7-unbalanced", True)
+        print("Plotting the minDCF in order to choose the right lambda for the logistic regression with PCA m = 7 and p_T = 0.9")
+        plotLR_minDCF(PCA7, prior_t, 0.9,  "LR-PCA7-πT=0.9")
 
-    
-    print("SVM-Full-πT=0.5")
-    plotLinSVM_minDCF(NOPCA, prior_t, 0.5, "SVM-Full-πT=0.5", True)
-    print("SVM-PCA5-πT=0.5")
-    plotLinSVM_minDCF(PCA5, prior_t, 0.5, "SVM-PCA5-πT=0.5", True)
-    print("SVM-PCA6-πT=0.5")
-    plotLinSVM_minDCF(PCA6, prior_t, 0.5, "SVM-PCA6-πT=0.5", True)
-    print("SVM-PCA7-πT=0.5")
-    plotLinSVM_minDCF(PCA7, prior_t, 0.5, "SVM-PCA7-πT=0.5", True)
-    
+        ######################################
+        #  Linear SVM - parameter selection  #
+        ######################################
 
-    print("SVM-Full-πT=0.1")
-    plotLinSVM_minDCF(NOPCA, prior_t, 0.1, "SVM-Full-πT=0.1", True)
-    print("SVM-PCA5-πT=0.1")
-    plotLinSVM_minDCF(PCA5, prior_t, 0.1, "SVM-PCA5-πT=0.1", True)
-    print("SVM-PCA6-πT=0.1")
-    plotLinSVM_minDCF(PCA6, prior_t, 0.1, "SVM-PCA6-πT=0.1", True)
-    print("SVM-PCA7-πT=0.1")
-    plotLinSVM_minDCF(PCA7, prior_t, 0.1, "SVM-PCA7-πT=0.1", True)
+        print("Plotting the minDCF in order to select the C parameter for the unbalanced linear SVM with NO PCA")
+        plotLinSVM_minDCF(NOPCA, prior_t, 0.0, "SVM-Full-unbalanced", True)
 
-    print("SVM-Full-πT=0.9")
-    plotLinSVM_minDCF(NOPCA, prior_t, 0.9, "SVM-Full-πT=0.9", True)
-    print("SVM-PCA5-πT=0.9")
-    plotLinSVM_minDCF(PCA5, prior_t, 0.9, "SVM-PCA5-πT=0.9", True)
-    print("SVM-PCA6-πT=0.9")
-    plotLinSVM_minDCF(PCA6, prior_t, 0.9, "SVM-PCA6-πT=0.9", True)
-    print("SVM-PCA7-πT=0.9")
-    plotLinSVM_minDCF(PCA7, prior_t, 0.9, "SVM-PCA7-πT=0.9", True)
-    
-    
-    print("RBF-SVM-Full")
-    plotRBFSVM_minDCF(NOPCA, prior_t, selected_prior=0.5, filename="RBF-SVM-Full", save = True )
-    print("RBF-SVM-PCA7")
-    plotRBFSVM_minDCF(PCA7, prior_t, selected_prior=0.5, filename="RBF-SVM-PCA7", save = True )
-    
-    print("RBF-SVM-PCA5")
-    plotRBFSVM_minDCF(PCA5, prior_t, selected_prior=0.5, filename="RBF-SVM-PCA5", save = True )
-    print("RBF-SVM-PCA6")
-    plotRBFSVM_minDCF(PCA6, prior_t, selected_prior=0.5, filename="RBF-SVM-PCA6", save = True )
-    
-    
-    print("QuadSVM-NOPCA")
-    plotQuadraticSVM_minDCF(NOPCA, prior_t, selected_prior=0.5, filename="QuadSVM-Full", save = True )
-    print("QuadSVM-PCA7")
-    plotQuadraticSVM_minDCF(PCA7, prior_t, selected_prior=0.5, filename="QuadSVM-PCA7", save = True )
-    
-    print("QuadSVM-PCA5")
-    plotQuadraticSVM_minDCF(PCA5, prior_t, selected_prior=0.5, filename="QuadSVM-PCA5", save = True )
-    print("QuadSVM-PCA6")
-    plotQuadraticSVM_minDCF(PCA6, prior_t, selected_prior=0.5, filename="QuadSVM-PCA6", save = True )
-    
-    
-    print("GMM-noPCA-full")
-    plotGMM_minDCF(NOPCA, prior_t, LBG_mode="full", filename="GMM-noPCA-full", save=True)
-    print("GMM-noPCA-tied")
-    plotGMM_minDCF(NOPCA, prior_t, LBG_mode="tied", filename="GMM-noPCA-tied", save=True)
-    print("GMM-noPCA-diag")
-    plotGMM_minDCF(NOPCA, prior_t, LBG_mode="diag", filename="GMM-noPCA-diag", save=True)
+        print("Plotting the minDCF in order to select the C parameter for the unbalanced linear SVM with PCA m = 7")
+        plotLinSVM_minDCF(PCA7, prior_t, 0.0, "SVM-PCA7-unbalanced", True)
+        
+        print("Plotting the minDCF in order to select the C parameter for the balanced linear SVM with NO PCA and p_T = 0.5")
+        plotLinSVM_minDCF(NOPCA, prior_t, 0.5, "SVM-Full-πT=0.5", True)
 
-    print("GMM-PCA7-full")
-    plotGMM_minDCF(PCA7, prior_t, LBG_mode="full", filename="GMM-PCA7-full", save=True)
-    print("GMM-PCA7-tied")
-    plotGMM_minDCF(PCA7, prior_t, LBG_mode="tied", filename="GMM-PCA7-tied", save=True)
-    print("GMM-PCA7-diag")
-    plotGMM_minDCF(PCA7, prior_t, LBG_mode="diag", filename="GMM-PCA7-diag", save=True)
+        print("Plotting the minDCF in order to select the C parameter for the balanced linear SVM with PCA m = 7 and p_T = 0.5")
+        plotLinSVM_minDCF(PCA7, prior_t, 0.5, "SVM-PCA7-πT=0.5", True)
+        
+        print("Plotting the minDCF in order to select the C parameter for the balanced linear SVM with NO PCA and p_T = 0.1")
+        plotLinSVM_minDCF(NOPCA, prior_t, 0.1, "SVM-Full-πT=0.1", True)
+
+        print("Plotting the minDCF in order to select the C parameter for the balanced linear SVM with PCA m = 7 and p_T = 0.1")
+        plotLinSVM_minDCF(PCA7, prior_t, 0.1, "SVM-PCA7-πT=0.1", True)
+
+        print("Plotting the minDCF in order to select the C parameter for the balanced linear SVM with NO PCA and p_T = 0.9")
+        plotLinSVM_minDCF(NOPCA, prior_t, 0.9, "SVM-Full-πT=0.9", True)
+
+        print("Plotting the minDCF in order to select the C parameter for the balanced linear SVM with PCA m = 7 and p_T = 0.9")
+        plotLinSVM_minDCF(PCA7, prior_t, 0.9, "SVM-PCA7-πT=0.9", True)
+        
+        ######################################
+        #    RBF SVM - parameter selection   #
+        ######################################
+
+        print("Plotting the minDCF in order to select the C and gamma parameter for the balanced RBF SVM with NO PCA and p_T = 0.5")
+        plotRBFSVM_minDCF(NOPCA, prior_t, selected_prior=0.5, filename="RBF-SVM-Full", save = True )
+
+        print("Plotting the minDCF in order to select the C and gamma parameter for the balanced RBF SVM with PCA m = 7 and p_T = 0.5")
+        plotRBFSVM_minDCF(PCA7, prior_t, selected_prior=0.5, filename="RBF-SVM-PCA7", save = True )
+        
+        ###########################################
+        #   Quadratic SVM - parameter selection   #
+        ###########################################
+        
+        print("Plotting the minDCF in order to select the C and c parameter for the balanced quadratic SVM with NO PCA and p_T = 0.5")
+        plotQuadraticSVM_minDCF(NOPCA, prior_t, selected_prior=0.5, filename="QuadSVM-Full", save = True )
+
+        print("Plotting the minDCF in order to select the C and c parameter for the balanced quadratic SVM with PCA m = 7 and p_T = 0.5")
+        plotQuadraticSVM_minDCF(PCA7, prior_t, selected_prior=0.5, filename="QuadSVM-PCA7", save = True )
+        
+        ######################################
+        #    GMM SVM - parameter selection   #
+        ######################################
+
+        print("Plotting the minDCF in order to select the number of components for the full covariance GMM with NO PCA")
+        plotGMM_minDCF(NOPCA, prior_t, LBG_mode="full", filename="GMM-noPCA-full", save=True)
+
+        print("Plotting the minDCF in order to select the number of components for the tied covariance GMM with NO PCA")
+        plotGMM_minDCF(NOPCA, prior_t, LBG_mode="tied", filename="GMM-noPCA-tied", save=True)
+
+        print("Plotting the minDCF in order to select the number of components for the diagonal covariance GMM with NO PCA")
+        plotGMM_minDCF(NOPCA, prior_t, LBG_mode="diag", filename="GMM-noPCA-diag", save=True)
+
+        print("Plotting the minDCF in order to select the number of components for the full covariance GMM with PCA m = 7")
+        plotGMM_minDCF(PCA7, prior_t, LBG_mode="full", filename="GMM-PCA7-full", save=True)
+
+        print("Plotting the minDCF in order to select the number of components for the tied covariance GMM with PCA m = 7")
+        plotGMM_minDCF(PCA7, prior_t, LBG_mode="tied", filename="GMM-PCA7-tied", save=True)
+
+        print("Plotting the minDCF in order to select the number of components for the diagonal covariance GMM with PCA m = 7")
+        plotGMM_minDCF(PCA7, prior_t, LBG_mode="diag", filename="GMM-PCA7-diag", save=True)
 
     
-    ### Linear LR ####
+    ######################################
+    #     Linear Logistic Regression     #
+    ######################################
+
    
-    print("LinearLR NO PCA")
-    computeLR_minDCF(NOPCA, prior_t, 1e-5)
-    print("LinearLR PCA7")
-    computeLR_minDCF(PCA7, prior_t, 1e-5)
-    print("LinearLR NO PCA")
+    print("Computing the Linear Logistic Regression with lambda = 10^-4 with NO PCA")
     computeLR_minDCF(NOPCA, prior_t, 1e-4)
-    print("LinearLR PCA7")
+
+    print("Computing the Linear Logistic Regression with lambda = 10^-4 with PCA m = 7")
     computeLR_minDCF(PCA7, prior_t, 1e-4)
     
 
-    ### LINEAR SVM ###
-    print("LinSVM noPCA")
+    ######################
+    #     Linear SVM     #
+    ######################
+
+    print("Computing the linear SVM with C = 5 * 10^-1 with NO PCA")
     computeSVM_minDCF(NOPCA, 5*1e-1, prior_t, "linear")
+
+    print("Computing the linear SVM with C = 5 * 10^-1 with PCA m = 7")   
     computeSVM_minDCF(PCA7, 5*1e-1, prior_t, "linear")
-    '''
+    
 
-    ### QUAD SVM ###
-    #computeSVM_minDCF(NOPCA, 1e-3, prior_t, "quadratic", c = 10.0 )
-    #computeSVM_minDCF(PCA7, 1e-3, prior_t, "quadratic", c = 10.0 )
+    ######################
+    #   Quadratic SVM    #
+    ######################
+
+    print("Computing the quadratic SVM with C =10^-3 and c = 10.0 with NO PCA")   
+    computeSVM_minDCF(NOPCA, 1e-3, prior_t, "quadratic", c = 10.0 )
+
+    print("Computing the quadratic SVM with C =10^-3 and c = 10.0 with PCA m = 7")   
+    computeSVM_minDCF(PCA7, 1e-3, prior_t, "quadratic", c = 10.0 )
 
 
-    ### RBF SVM ###
-    #computeSVM_minDCF(NOPCA, 5*1e-1, prior_t, "RBF", gamma = 1e-2 )
-    #computeSVM_minDCF(PCA7, 5*1e-1, prior_t, "RBF", gamma = 1e-2 )
+    ################
+    #   RBF SVM    #
+    ################
 
-    ### GMM NO PCA ###
-    #print("NO PCA")
-    #computeGMM_minDCF(NOPCA, prior_t, 4, "full")
-    #computeGMM_minDCF(NOPCA, prior_t, 4, "diag")
-    #computeGMM_minDCF(NOPCA, prior_t, 3, "tied")
+    print("Computing the quadratic SVM with C = 5*10^-1 and gamma = 10^-2 with NO PCA")   
+    computeSVM_minDCF(NOPCA, 5*1e-1, prior_t, "RBF", gamma = 1e-2 )
+
+    print("Computing the quadratic SVM with C = 5*10^-1 and gamma = 10^-2 with PCA m = 7")   
+    computeSVM_minDCF(PCA7, 5*1e-1, prior_t, "RBF", gamma = 1e-2 )
+
+    ################
+    #     GMM      #
+    ################
+
+    print("Computing the full covariance GMM with 16 components with NO PCA ")
+    computeGMM_minDCF(NOPCA, prior_t, 4, "full")
+
+    print("Computing the diagonal covariance GMM with 16 components with NO PCA ")
+    computeGMM_minDCF(NOPCA, prior_t, 4, "diag")
+
+    print("Computing the tied covariance GMM with 8 components with NO PCA ")
+    computeGMM_minDCF(NOPCA, prior_t, 3, "tied")
+
     ### GMM PCA = 7 ###
-    #print("PCA = 7")
-    #computeGMM_minDCF(PCA7, prior_t, 4, "full")
-    #computeGMM_minDCF(PCA7, prior_t, 2, "diag")
-    #computeGMM_minDCF(PCA7, prior_t, 3, "tied")
+    print("Computing the full covariance GMM with 16 components with PCA m = 7 ")
+    computeGMM_minDCF(PCA7, prior_t, 4, "full")
 
+    print("Computing the diagonal covariance GMM with 4 components with PCA m = 7 ")
+    computeGMM_minDCF(PCA7, prior_t, 2, "diag")
 
-    #### SCORE CALIBRATION ####
-    '''
-    print("uncalibrated actDCF for NO PCA models")
+    print("Computing the tied covariance GMM with 8 components with PCA m = 7 ")
+    computeGMM_minDCF(PCA7, prior_t, 3, "tied")
+
+    
+    #######################
+    #  Score calibration  #
+    #######################
+    
+    print("Computing the uncalibrated actDCF for NO PCA models")
     SVM_actDCF_calibration(NOPCA, 1e-3, 0.1, prior_t, "quadratic", c = 10, calibration = False, title = "quadSVM, noPCA, non calibrated" )
 
 
-    print("uncalibrated actDCF for PCA m = 7 models")
+    print("Computing the uncalibrated actDCF for PCA m = 7 models")
     MVG_actDCF_calibration(PCA7, prior_t, "tiedMVG", calibration = False, title= "MVG tied, PCA7, non calibrated")
     LR_actDCF_calibration(PCA7, 0.5, prior_t, 1e-4, calibration = False, title = "linear LR. PCA7, uncalibrated" )
     SVM_actDCF_calibration(PCA7, 5*1e-1, 0.1, prior_t, "linear", calibration = False, title = "linSVM, PCA7., non calibrated" )
-
-
-
     
-    print("calibrated actDCF for NO PCA models")
+    print("Computing the calibrated actDCF for NO PCA models")
     SVM_actDCF_calibration(NOPCA, 1e-3, 0.1, prior_t, "quadratic", c = 10, calibration = True, title = "quadSVM, noPCA, calibrated" )
 
 
-    print("calibrated actDCF for PCA m = 7 models")
+    print("Computing the calibrated actDCF for PCA m = 7 models")
     MVG_actDCF_calibration(PCA7, prior_t, "tiedMVG", calibration = True, title= "MVG tied, PCA7, calibrated")
     LR_actDCF_calibration(PCA7, 0.5, prior_t, 1e-4, calibration = True, title = "linear LR. PCA7, calibrated" )
     SVM_actDCF_calibration(PCA7, 5*1e-1, 0.1, prior_t, "linear", calibration = True, title = "linSVM, PCA7, calibrated" )
     
-    '''
-    #### EVALUATION ####
-
-
+    ######################
+    #  Model evaluation  #
+    ######################
+    print("Starting model evaluations")
     DTE, LTE = load("dataset/Test.txt")
     DTRz, DTEz = z_normalize(DTR, DTE)
     DTRz_PCA7, DTEz_PCA7 = PCA.compute_PCA(7, DTRz, DTEz)
@@ -762,36 +823,26 @@ if __name__ == "__main__":
     title_array = []
 
 
-    print("calibrated evalution actDCF for the best NO PCA models")
+    print("Computing calibrated evaluation actDCF for the best NO PCA models")
     score = SVM_actDCF_calibration_evaluation(NOPCA, DTRz, LTR, DTEz, LTE, 1e-3, 0.1, prior_t, "quadratic", c = 10, calibration = True)
     scores_array.append(score)
     title_array.append("quadSVM")
 
-    print("calibrated evalution actDCF for the best PCA m = 7 models")
-    score = MVG_actDCF_calibration_evaluation(PCA7, DTRz, LTR, DTEz, LTE, prior_t, "tiedMVG", calibration = True)
+    print("Computing calibrated evaluation actDCF for the best PCA m = 7 models")
+    score = MVG_actDCF_calibration_evaluation(PCA7, DTRz_PCA7, LTR, DTEz_PCA7, LTE, prior_t, "tiedMVG", calibration = True)
     scores_array.append(score)
     title_array.append("MVG")
 
-    score = LR_actDCF_calibration_evaluation(PCA7, DTRz, LTR, DTEz, LTE, 0.5, prior_t, 1e-4, calibration = True)
+    score = LR_actDCF_calibration_evaluation(PCA7, DTRz_PCA7, LTR, DTEz_PCA7, LTE, 0.5, prior_t, 1e-4, calibration = True)
     scores_array.append(score)
     title_array.append("linLR")
 
-    score = SVM_actDCF_calibration_evaluation(PCA7, DTRz, LTR, DTEz, LTE, 5*1e-1, 0.1, prior_t, "linear", calibration = True)
+    score = SVM_actDCF_calibration_evaluation(PCA7, DTRz_PCA7, LTR, DTEz_PCA7, LTE, 5*1e-1, 0.1, prior_t, "linear", calibration = True)
     scores_array.append(score)
     title_array.append("linSVM")
 
+    print("Plotting the ROC plot for the best models")
     model_eval.plotROC_curves(LTE, scores_array, title_array)
-
-
-
-
-
-    quit()
-
-
-
-
-
 
 
     print("Evaluation on all models")
@@ -818,10 +869,10 @@ if __name__ == "__main__":
         SVM_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, 1e-3, prior, prior_t, "quadratic", c = 10 )
 
     print("unbalanced SVM")
-    SVM_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, 1e-1, 0, prior_t, "RBF", gamma = 1e-1 )
+    SVM_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, 5*1e-1, 0, prior_t, "RBF", gamma = 1e-2 )
     print("balanced SVM")
     for prior in prior_t:
-        SVM_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, 1e-1, prior, prior_t, "RBF", gamma = 1e-1 )
+        SVM_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, 5*1e-1, prior, prior_t, "RBF", gamma = 1e-2 )
 
     GMM_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, prior_t, 4, "full")
     GMM_actDCF_calibration_evaluation(NOPCA,DTRz, LTR, DTEz, LTE, prior_t, 4, "diag")
@@ -830,37 +881,37 @@ if __name__ == "__main__":
 
     
     print("PCA7 Evaluation")
-    MVG_actDCF_calibration_evaluation(PCA7,DTRz, LTR, DTEz, LTE, prior_t, "fullMVG") 
-    MVG_actDCF_calibration_evaluation(PCA7,DTRz, LTR, DTEz, LTE, prior_t, "diagMVG") 
-    MVG_actDCF_calibration_evaluation(PCA7,DTRz, LTR, DTEz, LTE, prior_t, "tiedDiagMVG") 
-    MVG_actDCF_calibration_evaluation(PCA7,DTRz, LTR, DTEz, LTE, prior_t, "tiedMVG") 
+    MVG_actDCF_calibration_evaluation(PCA7,DTRz_PCA7, LTR, DTEz_PCA7, LTE, prior_t, "fullMVG") 
+    MVG_actDCF_calibration_evaluation(PCA7,DTRz_PCA7, LTR, DTEz_PCA7, LTE, prior_t, "diagMVG") 
+    MVG_actDCF_calibration_evaluation(PCA7,DTRz_PCA7, LTR, DTEz_PCA7, LTE, prior_t, "tiedDiagMVG") 
+    MVG_actDCF_calibration_evaluation(PCA7,DTRz_PCA7, LTR, DTEz_PCA7, LTE, prior_t, "tiedMVG") 
     
 
     for prior in prior_t:
-        LR_actDCF_calibration_evaluation(PCA7,DTRz, LTR, DTEz, LTE, prior, prior_t, 1e-4, calibration = True)
+        LR_actDCF_calibration_evaluation(PCA7,DTRz_PCA7, LTR, DTEz_PCA7, LTE, prior, prior_t, 1e-4, calibration = True)
 
     print("unbalanced SVM")
-    SVM_actDCF_calibration_evaluation(PCA7,DTRz, LTR, DTEz, LTE, 5*1e-1, 0, prior_t, "linear", calibration = True )
+    SVM_actDCF_calibration_evaluation(PCA7,DTRz_PCA7, LTR, DTEz_PCA7, LTE, 5*1e-1, 0, prior_t, "linear", calibration = True )
     print("balanced SVM")
     for prior in prior_t:
-        SVM_actDCF_calibration_evaluation(PCA7,DTRz, LTR, DTEz, LTE, 5*1e-1, prior, prior_t, "linear", calibration = True )
+        SVM_actDCF_calibration_evaluation(PCA7,DTRz_PCA7, LTR, DTEz_PCA7, LTE, 5*1e-1, prior, prior_t, "linear", calibration = True )
 
     print("unbalanced SVM")
-    SVM_actDCF_calibration_evaluation(PCA7,DTRz, LTR, DTEz, LTE, 1e-3, 0, prior_t, "quadratic", c = 10, calibration = True )
+    SVM_actDCF_calibration_evaluation(PCA7,DTRz_PCA7, LTR, DTEz_PCA7, LTE, 1e-3, 0, prior_t, "quadratic", c = 10, calibration = True )
     print("balanced SVM")
     for prior in prior_t:
-        SVM_actDCF_calibration_evaluation(PCA7,DTRz, LTR, DTEz, LTE, 1e-3, prior, prior_t, "quadratic", c = 10, calibration = True )
+        SVM_actDCF_calibration_evaluation(PCA7,DTRz_PCA7, LTR, DTEz_PCA7, LTE, 1e-3, prior, prior_t, "quadratic", c = 10, calibration = True )
 
     print("unbalanced SVM")
-    SVM_actDCF_calibration_evaluation(PCA7,DTRz, LTR, DTEz, LTE, 1e-1, 0, prior_t, "RBF", gamma = 1e-1, calibration = True )
+    SVM_actDCF_calibration_evaluation(PCA7,DTRz_PCA7, LTR, DTEz_PCA7, LTE, 5*1e-1, 0, prior_t, "RBF", gamma = 1e-2, calibration = True )
     print("balanced SVM")
     for prior in prior_t:
-        SVM_actDCF_calibration_evaluation(PCA7,DTRz, LTR, DTEz, LTE, 1e-1, prior, prior_t, "RBF", gamma = 1e-1, calibration = True )
+        SVM_actDCF_calibration_evaluation(PCA7,DTRz_PCA7, LTR, DTEz_PCA7, LTE, 5*1e-1, prior, prior_t, "RBF", gamma = 1e-2, calibration = True )
 
-    GMM_actDCF_calibration_evaluation(PCA7,DTRz, LTR, DTEz, LTE, prior_t, 4, "full", calibration = True)
-    GMM_actDCF_calibration_evaluation(PCA7,DTRz, LTR, DTEz, LTE, prior_t, 2, "diag", calibration = True)
-    GMM_actDCF_calibration_evaluation(PCA7,DTRz, LTR, DTEz, LTE, prior_t, 3, "tied", calibration = True)
+    GMM_actDCF_calibration_evaluation(PCA7,DTRz_PCA7, LTR, DTEz_PCA7, LTE, prior_t, 4, "full", calibration = True)
+    GMM_actDCF_calibration_evaluation(PCA7,DTRz_PCA7, LTR, DTEz_PCA7, LTE, prior_t, 2, "diag", calibration = True)
+    GMM_actDCF_calibration_evaluation(PCA7,DTRz_PCA7, LTR, DTEz_PCA7, LTE, prior_t, 3, "tied", calibration = True)
     
 
 
-    print("ciao")
+    print("End of the program!")
