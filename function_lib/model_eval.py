@@ -3,7 +3,7 @@ import scipy.special
 import function_lib.lib as lib
 import matplotlib.pyplot as plt
 
-#TODO fix scores e llratio è la stessa cosa. llratio è lo score del classificatore.
+
 
 def generateConfusionMatrix(eval_L, predicted_L):
     numberOfClasses = np.max(eval_L) + 1

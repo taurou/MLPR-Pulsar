@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import function_lib.lib as lib
 import scipy.optimize
 class SVMClass:
-    def __init__(self, DTR, LTR, kernelType, k, pi_t = 0.0, c = 0.0, d = 2.0, gamma = 0.0): #K is basically the same as before but we add power of 2 of it at the kernel.
+    def __init__(self, DTR, LTR, kernelType, k, pi_t = 0.0, c = 0.0, d = 2.0, gamma = 0.0): 
         self.kernelType = kernelType
         self.c = c
         self.d = d
@@ -29,7 +29,7 @@ class SVMClass:
     def compute_PolyKernel(self, X1, X2, c, d, k):
         return (np.dot(X1.T, X2) + c)**d + k**2
 
-    def compute_RBFKernel(self, X1, X2, gamma, k): #TODO optimize distance computing
+    def compute_RBFKernel(self, X1, X2, gamma, k):
         distances = lib.vcol((X1 ** 2).sum(axis = 0)) + lib.vrow((X2 ** 2).sum(axis = 0)) - 2 * np.dot(X1.T, X2)
         kernel = np.exp(-gamma * distances)
         return kernel + k**2
@@ -38,7 +38,7 @@ class SVMClass:
         Ha = np.dot(self.H,lib.vcol(alpha))
         aHa = np.dot(lib.vrow(alpha),Ha)
         J = -0.5*aHa.ravel() + alpha.sum() #.sum because a.T DOT 1 will return the sum.  
-        J_grad = - Ha + 1#TODO check with np.ones
+        J_grad = - Ha + 1
         return J, J_grad.ravel()
     
     def LDual(self, alpha):

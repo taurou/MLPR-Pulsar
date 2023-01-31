@@ -61,31 +61,6 @@ def computeSbSw(D,L):  # returns Sb,Sw
 
 
 
-def KfoldCrossValidation(D, L, k, prior, classifierFunction, seed=0): #passing the classifier function
-    np.random.seed(seed)
-    idx = np.random.permutation(D.shape[1]) #randomizes the order of the data
-
-    group_size = int(math.ceil((D.shape[1]/k)))
-    goodEstimation = 0
-    totalEstimation = 0
-
-    for i in range(k):
-        idxTest = idx[i*group_size:(i*group_size + group_size)]
-        idxTrain = [i for i in idx if i not in set(idxTest)]
-        predicted_L = classifierFunction(D[:,idxTrain], L[idxTrain], D[:,idxTest], L[idxTest], prior)
-        BooleanPredictionResults = predicted_L == L[idxTest]
-        goodEstimation += sum(BooleanPredictionResults)
-        totalEstimation += len(predicted_L)
-    
-    Accuracy = goodEstimation / totalEstimation
-    Error = 1 - Accuracy
-    print("KFOLD Accuracy: ", Accuracy, "Error: ", Error)   #TODO correct rounding 
-
-
-def LeaveOneOutCrossValidation(D, L, prior, classifierFunction, seed=0):
-    KfoldCrossValidation(D, L, D.shape[1], prior, classifierFunction, seed)
-
-
 #if diagonal is set to true, only the diagonal will be kept and the other elements will be zeroed
 
 def compute_Mean_CovMatr_perClass(D, L, diagonal=False): #put diagonal = true optionally if we want to use just the diagonal of the cov matrix
@@ -107,7 +82,7 @@ def compute_logDensity_AllSamples(D, mu_C_tuple):
     return np.array(matrix)
 
 
-def MVG_basePredictor(eval_D, eval_L, mu_C, prior): #TODO correct eval_L ! It's never used!!
+def MVG_basePredictor(eval_D, eval_L, mu_C, prior): 
 
     logDens = np.zeros((len(mu_C), eval_D.shape[1]))
     logSJoint = np.zeros((len(mu_C), eval_D.shape[1]))

@@ -1,0 +1,426 @@
+Plotting the raw features
+Plotting the Z-normalized features
+plotting the heatmap showing correlations between the features
+Computing the MVG for no PCA dataset, and also for PCA with m from 7 to 5 
+*******3-Fold fullMVG*******
+[K-Fold Z-norm Full] prior = 0.5 minDCF = 0.142,
+[K-Fold Z-norm Full] prior = 0.1 minDCF = 0.289,
+[K-Fold Z-norm Full] prior = 0.9 minDCF = 0.659,
+[K-Fold Z-norm PCA5] prior = 0.5 minDCF = 0.149,
+[K-Fold Z-norm PCA5] prior = 0.1 minDCF = 0.256,
+[K-Fold Z-norm PCA5] prior = 0.9 minDCF = 0.651,
+[K-Fold Z-norm PCA6] prior = 0.5 minDCF = 0.152,
+[K-Fold Z-norm PCA6] prior = 0.1 minDCF = 0.292,
+[K-Fold Z-norm PCA6] prior = 0.9 minDCF = 0.636,
+[K-Fold Z-norm PCA7] prior = 0.5 minDCF = 0.139,
+[K-Fold Z-norm PCA7] prior = 0.1 minDCF = 0.307,
+[K-Fold Z-norm PCA7] prior = 0.9 minDCF = 0.627,
+*******3-Fold diagMVG*******
+[K-Fold Z-norm Full] prior = 0.5 minDCF = 0.192,
+[K-Fold Z-norm Full] prior = 0.1 minDCF = 0.316,
+[K-Fold Z-norm Full] prior = 0.9 minDCF = 0.734,
+[K-Fold Z-norm PCA5] prior = 0.5 minDCF = 0.220,
+[K-Fold Z-norm PCA5] prior = 0.1 minDCF = 0.462,
+[K-Fold Z-norm PCA5] prior = 0.9 minDCF = 0.749,
+[K-Fold Z-norm PCA6] prior = 0.5 minDCF = 0.222,
+[K-Fold Z-norm PCA6] prior = 0.1 minDCF = 0.532,
+[K-Fold Z-norm PCA6] prior = 0.9 minDCF = 0.728,
+[K-Fold Z-norm PCA7] prior = 0.5 minDCF = 0.214,
+[K-Fold Z-norm PCA7] prior = 0.1 minDCF = 0.509,
+[K-Fold Z-norm PCA7] prior = 0.9 minDCF = 0.718,
+*******3-Fold TiedDiagMVG*******
+[K-Fold Z-norm Full] prior = 0.5 minDCF = 0.160,
+[K-Fold Z-norm Full] prior = 0.1 minDCF = 0.266,
+[K-Fold Z-norm Full] prior = 0.9 minDCF = 0.579,
+[K-Fold Z-norm PCA5] prior = 0.5 minDCF = 0.171,
+[K-Fold Z-norm PCA5] prior = 0.1 minDCF = 0.313,
+[K-Fold Z-norm PCA5] prior = 0.9 minDCF = 0.593,
+[K-Fold Z-norm PCA6] prior = 0.5 minDCF = 0.163,
+[K-Fold Z-norm PCA6] prior = 0.1 minDCF = 0.302,
+[K-Fold Z-norm PCA6] prior = 0.9 minDCF = 0.600,
+[K-Fold Z-norm PCA7] prior = 0.5 minDCF = 0.140,
+[K-Fold Z-norm PCA7] prior = 0.1 minDCF = 0.274,
+[K-Fold Z-norm PCA7] prior = 0.9 minDCF = 0.597,
+*******3-Fold TiedMVG*******
+[K-Fold Z-norm Full] prior = 0.5 minDCF = 0.112,
+[K-Fold Z-norm Full] prior = 0.1 minDCF = 0.226,
+[K-Fold Z-norm Full] prior = 0.9 minDCF = 0.570,
+[K-Fold Z-norm PCA5] prior = 0.5 minDCF = 0.150,
+[K-Fold Z-norm PCA5] prior = 0.1 minDCF = 0.264,
+[K-Fold Z-norm PCA5] prior = 0.9 minDCF = 0.565,
+[K-Fold Z-norm PCA6] prior = 0.5 minDCF = 0.138,
+[K-Fold Z-norm PCA6] prior = 0.1 minDCF = 0.255,
+[K-Fold Z-norm PCA6] prior = 0.9 minDCF = 0.572,
+[K-Fold Z-norm PCA7] prior = 0.5 minDCF = 0.112,
+[K-Fold Z-norm PCA7] prior = 0.1 minDCF = 0.224,
+[K-Fold Z-norm PCA7] prior = 0.9 minDCF = 0.567,
+Computing the Linear Logistic Regression with lambda = 10^-4 with NO PCA
+[linear-LR] - lambda: 0.000100 p_T: 0.5 prior: 0.5 minDCF: 0.116
+[linear-LR] - lambda: 0.000100 p_T: 0.5 prior: 0.1 minDCF: 0.222
+[linear-LR] - lambda: 0.000100 p_T: 0.5 prior: 0.9 minDCF: 0.527
+[linear-LR] - lambda: 0.000100 p_T: 0.1 prior: 0.5 minDCF: 0.116
+[linear-LR] - lambda: 0.000100 p_T: 0.1 prior: 0.1 minDCF: 0.215
+[linear-LR] - lambda: 0.000100 p_T: 0.1 prior: 0.9 minDCF: 0.546
+[linear-LR] - lambda: 0.000100 p_T: 0.9 prior: 0.5 minDCF: 0.123
+[linear-LR] - lambda: 0.000100 p_T: 0.9 prior: 0.1 minDCF: 0.225
+[linear-LR] - lambda: 0.000100 p_T: 0.9 prior: 0.9 minDCF: 0.522
+Computing the Linear Logistic Regression with lambda = 10^-4 with PCA m = 7
+[linear-LR] - lambda: 0.000100 p_T: 0.5 prior: 0.5 minDCF: 0.115
+[linear-LR] - lambda: 0.000100 p_T: 0.5 prior: 0.1 minDCF: 0.219
+[linear-LR] - lambda: 0.000100 p_T: 0.5 prior: 0.9 minDCF: 0.537
+[linear-LR] - lambda: 0.000100 p_T: 0.1 prior: 0.5 minDCF: 0.117
+[linear-LR] - lambda: 0.000100 p_T: 0.1 prior: 0.1 minDCF: 0.216
+[linear-LR] - lambda: 0.000100 p_T: 0.1 prior: 0.9 minDCF: 0.555
+[linear-LR] - lambda: 0.000100 p_T: 0.9 prior: 0.5 minDCF: 0.120
+[linear-LR] - lambda: 0.000100 p_T: 0.9 prior: 0.1 minDCF: 0.221
+[linear-LR] - lambda: 0.000100 p_T: 0.9 prior: 0.9 minDCF: 0.538
+Computing the linear SVM with C = 5 * 10^-1 with NO PCA
+[linear-unbalancedSVM] - C: 0.500000 prior: 0.5, minDCF: 0.116 
+[linear-unbalancedSVM] - C: 0.500000 prior: 0.1, minDCF: 0.217 
+[linear-unbalancedSVM] - C: 0.500000 prior: 0.9, minDCF: 0.549 
+[linear-balancedSVM] - C: 0.500000 prior: 0.5, p_T: 0.5 minDCF: 0.112 
+[linear-balancedSVM] - C: 0.500000 prior: 0.1, p_T: 0.5 minDCF: 0.223 
+[linear-balancedSVM] - C: 0.500000 prior: 0.9, p_T: 0.5 minDCF: 0.544 
+[linear-balancedSVM] - C: 0.500000 prior: 0.5, p_T: 0.1 minDCF: 0.115 
+[linear-balancedSVM] - C: 0.500000 prior: 0.1, p_T: 0.1 minDCF: 0.217 
+[linear-balancedSVM] - C: 0.500000 prior: 0.9, p_T: 0.1 minDCF: 0.554 
+[linear-balancedSVM] - C: 0.500000 prior: 0.5, p_T: 0.9 minDCF: 0.127 
+[linear-balancedSVM] - C: 0.500000 prior: 0.1, p_T: 0.9 minDCF: 0.222 
+[linear-balancedSVM] - C: 0.500000 prior: 0.9, p_T: 0.9 minDCF: 0.518 
+Computing the linear SVM with C = 5 * 10^-1 with PCA m = 7
+[linear-unbalancedSVM] - C: 0.500000 prior: 0.5, minDCF: 0.118 
+[linear-unbalancedSVM] - C: 0.500000 prior: 0.1, minDCF: 0.217 
+[linear-unbalancedSVM] - C: 0.500000 prior: 0.9, minDCF: 0.553 
+[linear-balancedSVM] - C: 0.500000 prior: 0.5, p_T: 0.5 minDCF: 0.112 
+[linear-balancedSVM] - C: 0.500000 prior: 0.1, p_T: 0.5 minDCF: 0.225 
+[linear-balancedSVM] - C: 0.500000 prior: 0.9, p_T: 0.5 minDCF: 0.562 
+[linear-balancedSVM] - C: 0.500000 prior: 0.5, p_T: 0.1 minDCF: 0.116 
+[linear-balancedSVM] - C: 0.500000 prior: 0.1, p_T: 0.1 minDCF: 0.215 
+[linear-balancedSVM] - C: 0.500000 prior: 0.9, p_T: 0.1 minDCF: 0.545 
+[linear-balancedSVM] - C: 0.500000 prior: 0.5, p_T: 0.9 minDCF: 0.126 
+[linear-balancedSVM] - C: 0.500000 prior: 0.1, p_T: 0.9 minDCF: 0.225 
+[linear-balancedSVM] - C: 0.500000 prior: 0.9, p_T: 0.9 minDCF: 0.541 
+Computing the quadratic SVM with C =10^-3 and c = 10.0 with NO PCA
+[quadratic-unbalancedSVM] - C: 0.001000 prior: 0.5, minDCF: 0.113 c : 10.000000
+[quadratic-unbalancedSVM] - C: 0.001000 prior: 0.1, minDCF: 0.213 c : 10.000000
+[quadratic-unbalancedSVM] - C: 0.001000 prior: 0.9, minDCF: 0.603 c : 10.000000
+[quadratic-balancedSVM] - C: 0.001000 prior: 0.5, p_T: 0.5 minDCF: 0.114 c : 10.000000
+[quadratic-balancedSVM] - C: 0.001000 prior: 0.1, p_T: 0.5 minDCF: 0.229 c : 10.000000
+[quadratic-balancedSVM] - C: 0.001000 prior: 0.9, p_T: 0.5 minDCF: 0.540 c : 10.000000
+[quadratic-balancedSVM] - C: 0.001000 prior: 0.5, p_T: 0.1 minDCF: 0.112 c : 10.000000
+[quadratic-balancedSVM] - C: 0.001000 prior: 0.1, p_T: 0.1 minDCF: 0.217 c : 10.000000
+[quadratic-balancedSVM] - C: 0.001000 prior: 0.9, p_T: 0.1 minDCF: 0.579 c : 10.000000
+[quadratic-balancedSVM] - C: 0.001000 prior: 0.5, p_T: 0.9 minDCF: 0.148 c : 10.000000
+[quadratic-balancedSVM] - C: 0.001000 prior: 0.1, p_T: 0.9 minDCF: 0.272 c : 10.000000
+[quadratic-balancedSVM] - C: 0.001000 prior: 0.9, p_T: 0.9 minDCF: 0.578 c : 10.000000
+Computing the quadratic SVM with C =10^-3 and c = 10.0 with PCA m = 7
+[quadratic-unbalancedSVM] - C: 0.001000 prior: 0.5, minDCF: 0.113 c : 10.000000
+[quadratic-unbalancedSVM] - C: 0.001000 prior: 0.1, minDCF: 0.216 c : 10.000000
+[quadratic-unbalancedSVM] - C: 0.001000 prior: 0.9, minDCF: 0.615 c : 10.000000
+[quadratic-balancedSVM] - C: 0.001000 prior: 0.5, p_T: 0.5 minDCF: 0.114 c : 10.000000
+[quadratic-balancedSVM] - C: 0.001000 prior: 0.1, p_T: 0.5 minDCF: 0.229 c : 10.000000
+[quadratic-balancedSVM] - C: 0.001000 prior: 0.9, p_T: 0.5 minDCF: 0.550 c : 10.000000
+[quadratic-balancedSVM] - C: 0.001000 prior: 0.5, p_T: 0.1 minDCF: 0.113 c : 10.000000
+[quadratic-balancedSVM] - C: 0.001000 prior: 0.1, p_T: 0.1 minDCF: 0.217 c : 10.000000
+[quadratic-balancedSVM] - C: 0.001000 prior: 0.9, p_T: 0.1 minDCF: 0.578 c : 10.000000
+[quadratic-balancedSVM] - C: 0.001000 prior: 0.5, p_T: 0.9 minDCF: 0.150 c : 10.000000
+[quadratic-balancedSVM] - C: 0.001000 prior: 0.1, p_T: 0.9 minDCF: 0.275 c : 10.000000
+[quadratic-balancedSVM] - C: 0.001000 prior: 0.9, p_T: 0.9 minDCF: 0.578 c : 10.000000
+Computing the quadratic SVM with C = 5*10^-1 and gamma = 10^-2 with NO PCA
+[RBF-unbalancedSVM] - C: 0.500000 prior: 0.5, minDCF: 0.120 gamma : 0.010000
+[RBF-unbalancedSVM] - C: 0.500000 prior: 0.1, minDCF: 0.226 gamma : 0.010000
+[RBF-unbalancedSVM] - C: 0.500000 prior: 0.9, minDCF: 0.576 gamma : 0.010000
+[RBF-balancedSVM] - C: 0.500000 prior: 0.5, p_T: 0.5 minDCF: 0.119 gamma : 0.010000
+[RBF-balancedSVM] - C: 0.500000 prior: 0.1, p_T: 0.5 minDCF: 0.235 gamma : 0.010000
+[RBF-balancedSVM] - C: 0.500000 prior: 0.9, p_T: 0.5 minDCF: 0.562 gamma : 0.010000
+[RBF-balancedSVM] - C: 0.500000 prior: 0.5, p_T: 0.1 minDCF: 0.120 gamma : 0.010000
+[RBF-balancedSVM] - C: 0.500000 prior: 0.1, p_T: 0.1 minDCF: 0.226 gamma : 0.010000
+[RBF-balancedSVM] - C: 0.500000 prior: 0.9, p_T: 0.1 minDCF: 0.578 gamma : 0.010000
+[RBF-balancedSVM] - C: 0.500000 prior: 0.5, p_T: 0.9 minDCF: 0.148 gamma : 0.010000
+[RBF-balancedSVM] - C: 0.500000 prior: 0.1, p_T: 0.9 minDCF: 0.283 gamma : 0.010000
+[RBF-balancedSVM] - C: 0.500000 prior: 0.9, p_T: 0.9 minDCF: 0.598 gamma : 0.010000
+Computing the quadratic SVM with C = 5*10^-1 and gamma = 10^-2 with PCA m = 7
+[RBF-unbalancedSVM] - C: 0.500000 prior: 0.5, minDCF: 0.120 gamma : 0.010000
+[RBF-unbalancedSVM] - C: 0.500000 prior: 0.1, minDCF: 0.226 gamma : 0.010000
+[RBF-unbalancedSVM] - C: 0.500000 prior: 0.9, minDCF: 0.579 gamma : 0.010000
+[RBF-balancedSVM] - C: 0.500000 prior: 0.5, p_T: 0.5 minDCF: 0.119 gamma : 0.010000
+[RBF-balancedSVM] - C: 0.500000 prior: 0.1, p_T: 0.5 minDCF: 0.235 gamma : 0.010000
+[RBF-balancedSVM] - C: 0.500000 prior: 0.9, p_T: 0.5 minDCF: 0.552 gamma : 0.010000
+[RBF-balancedSVM] - C: 0.500000 prior: 0.5, p_T: 0.1 minDCF: 0.120 gamma : 0.010000
+[RBF-balancedSVM] - C: 0.500000 prior: 0.1, p_T: 0.1 minDCF: 0.227 gamma : 0.010000
+[RBF-balancedSVM] - C: 0.500000 prior: 0.9, p_T: 0.1 minDCF: 0.578 gamma : 0.010000
+[RBF-balancedSVM] - C: 0.500000 prior: 0.5, p_T: 0.9 minDCF: 0.148 gamma : 0.010000
+[RBF-balancedSVM] - C: 0.500000 prior: 0.1, p_T: 0.9 minDCF: 0.281 gamma : 0.010000
+[RBF-balancedSVM] - C: 0.500000 prior: 0.9, p_T: 0.9 minDCF: 0.593 gamma : 0.010000
+Computing the full covariance GMM with 16 components with NO PCA 
+[full-GMM] - #components: 16 prior: 0.5 minDCF: 0.129
+[full-GMM] - #components: 16 prior: 0.1 minDCF: 0.228
+[full-GMM] - #components: 16 prior: 0.9 minDCF: 0.576
+Computing the diagonal covariance GMM with 16 components with NO PCA 
+[diag-GMM] - #components: 16 prior: 0.5 minDCF: 0.147
+[diag-GMM] - #components: 16 prior: 0.1 minDCF: 0.260
+[diag-GMM] - #components: 16 prior: 0.9 minDCF: 0.580
+Computing the tied covariance GMM with 8 components with NO PCA 
+[tied-GMM] - #components: 8 prior: 0.5 minDCF: 0.139
+[tied-GMM] - #components: 8 prior: 0.1 minDCF: 0.242
+[tied-GMM] - #components: 8 prior: 0.9 minDCF: 0.709
+Computing the full covariance GMM with 16 components with PCA m = 7 
+[full-GMM] - #components: 16 prior: 0.5 minDCF: 0.129
+[full-GMM] - #components: 16 prior: 0.1 minDCF: 0.228
+[full-GMM] - #components: 16 prior: 0.9 minDCF: 0.592
+Computing the diagonal covariance GMM with 4 components with PCA m = 7 
+[diag-GMM] - #components: 4 prior: 0.5 minDCF: 0.144
+[diag-GMM] - #components: 4 prior: 0.1 minDCF: 0.253
+[diag-GMM] - #components: 4 prior: 0.9 minDCF: 0.612
+Computing the tied covariance GMM with 8 components with PCA m = 7 
+[tied-GMM] - #components: 8 prior: 0.5 minDCF: 0.135
+[tied-GMM] - #components: 8 prior: 0.1 minDCF: 0.240
+[tied-GMM] - #components: 8 prior: 0.9 minDCF: 0.702
+Computing the uncalibrated actDCF for NO PCA models
+Uncalibrated scores
+[quadratic-SVM] - C: 0.001000 prior: 0.5, p_T: 0.1 minDCF: 0.112 actDCF: 0.239
+[quadratic-SVM] - C: 0.001000 prior: 0.1, p_T: 0.1 minDCF: 0.216 actDCF: 0.482
+[quadratic-SVM] - C: 0.001000 prior: 0.9, p_T: 0.1 minDCF: 0.582 actDCF: 0.996
+Uncalibrated scores
+[linear-SVM] - C: 0.500000 prior: 0.5, p_T: 0.5 minDCF: 0.113 actDCF: 0.115
+[linear-SVM] - C: 0.500000 prior: 0.1, p_T: 0.5 minDCF: 0.224 actDCF: 0.285
+[linear-SVM] - C: 0.500000 prior: 0.9, p_T: 0.5 minDCF: 0.548 actDCF: 0.781
+Computing the uncalibrated actDCF for PCA m = 7 models
+Uncalibrated scores
+[tiedMVG] - prior: 0.5 minDCF: 0.112 actDCF: 0.191
+[tiedMVG] - prior: 0.1 minDCF: 0.224 actDCF: 0.274
+[tiedMVG] - prior: 0.9 minDCF: 0.567 actDCF: 1.422
+Uncalibrated scores
+[linear-LR] - lambda: 0.000100 p_T: 0.5 prior: 0.5 minDCF: 0.115 actDCF: 0.118
+[linear-LR] - lambda: 0.000100 p_T: 0.5 prior: 0.1 minDCF: 0.219 actDCF: 0.229
+[linear-LR] - lambda: 0.000100 p_T: 0.5 prior: 0.9 minDCF: 0.537 actDCF: 0.547
+Computing the calibrated actDCF for NO PCA models
+Calibrated scores
+[quadratic-SVM] - C: 0.001000 prior: 0.5, p_T: 0.1 minDCF: 0.112 actDCF: 0.239 actDCF_calibrated: 0.124
+[quadratic-SVM] - C: 0.001000 prior: 0.1, p_T: 0.1 minDCF: 0.216 actDCF: 0.482 actDCF_calibrated: 0.233
+[quadratic-SVM] - C: 0.001000 prior: 0.9, p_T: 0.1 minDCF: 0.582 actDCF: 0.996 actDCF_calibrated: 0.586
+Calibrated scores
+[linear-SVM] - C: 0.500000 prior: 0.5, p_T: 0.5 minDCF: 0.113 actDCF: 0.115 actDCF_calibrated: 0.116
+[linear-SVM] - C: 0.500000 prior: 0.1, p_T: 0.5 minDCF: 0.224 actDCF: 0.285 actDCF_calibrated: 0.228
+[linear-SVM] - C: 0.500000 prior: 0.9, p_T: 0.5 minDCF: 0.548 actDCF: 0.781 actDCF_calibrated: 0.567
+Computing the calibrated actDCF for PCA m = 7 models
+Calibrated scores
+[tiedMVG] - prior: 0.5 minDCF: 0.112 actDCF: 0.191 actDCF_calibrated: 0.113
+[tiedMVG] - prior: 0.1 minDCF: 0.224 actDCF: 0.274 actDCF_calibrated: 0.230
+[tiedMVG] - prior: 0.9 minDCF: 0.567 actDCF: 1.422 actDCF_calibrated: 0.591
+Calibrated scores
+[linear-LR] - lambda: 0.000100 p_T: 0.5 prior: 0.5 minDCF: 0.115 actDCF: 0.118 actDCF_calibrated: 0.117
+[linear-LR] - lambda: 0.000100 p_T: 0.5 prior: 0.1 minDCF: 0.219 actDCF: 0.229 actDCF_calibrated: 0.227
+[linear-LR] - lambda: 0.000100 p_T: 0.5 prior: 0.9 minDCF: 0.537 actDCF: 0.547 actDCF_calibrated: 0.547
+Starting model evaluations
+Computing calibrated evaluation actDCF for the best NO PCA models
+Calibrated evaluation scores
+[quadratic-SVM] - C: 0.001000 prior: 0.5, p_T: 0.1 minDCF: 0.108 actDCF: 0.235 actDCF_calibrated: 0.119
+[quadratic-SVM] - C: 0.001000 prior: 0.1, p_T: 0.1 minDCF: 0.201 actDCF: 0.502 actDCF_calibrated: 0.215
+[quadratic-SVM] - C: 0.001000 prior: 0.9, p_T: 0.1 minDCF: 0.497 actDCF: 0.995 actDCF_calibrated: 0.515
+Calibrated evaluation scores
+[linear-SVM] - C: 0.500000 prior: 0.5, p_T: 0.5 minDCF: 0.106 actDCF: 0.112 actDCF_calibrated: 0.111
+[linear-SVM] - C: 0.500000 prior: 0.1, p_T: 0.5 minDCF: 0.201 actDCF: 0.291 actDCF_calibrated: 0.222
+[linear-SVM] - C: 0.500000 prior: 0.9, p_T: 0.5 minDCF: 0.564 actDCF: 0.806 actDCF_calibrated: 0.574
+Computing calibrated evaluation actDCF for the best PCA m = 7 models
+Calibrated evaluation scores
+[tiedMVG] - prior: 0.5 minDCF: 0.110 actDCF: 0.202 actDCF_calibrated: 0.115
+[tiedMVG] - prior: 0.1 minDCF: 0.208 actDCF: 0.277 actDCF_calibrated: 0.221
+[tiedMVG] - prior: 0.9 minDCF: 0.587 actDCF: 1.338 actDCF_calibrated: 0.611
+Calibrated evaluation scores
+[linear-LR] - lambda: 0.000100 p_T: 0.5 prior: 0.5 minDCF: 0.109 actDCF: 0.113 actDCF_calibrated: 0.112
+[linear-LR] - lambda: 0.000100 p_T: 0.5 prior: 0.1 minDCF: 0.202 actDCF: 0.224 actDCF_calibrated: 0.221
+[linear-LR] - lambda: 0.000100 p_T: 0.5 prior: 0.9 minDCF: 0.538 actDCF: 0.566 actDCF_calibrated: 0.566
+Plotting the ROC plot for the best models
+Evaluation on all models
+NO PCA Evaluation
+Uncalibrated evaluation scores
+[fullMVG] - prior: 0.5 minDCF: 0.140 actDCF: 0.154
+[fullMVG] - prior: 0.1 minDCF: 0.283 actDCF: 0.316
+[fullMVG] - prior: 0.9 minDCF: 0.646 actDCF: 0.924
+Uncalibrated evaluation scores
+[diagMVG] - prior: 0.5 minDCF: 0.185 actDCF: 0.191
+[diagMVG] - prior: 0.1 minDCF: 0.330 actDCF: 0.541
+[diagMVG] - prior: 0.9 minDCF: 0.621 actDCF: 1.178
+Uncalibrated evaluation scores
+[tiedDiagMVG] - prior: 0.5 minDCF: 0.152 actDCF: 0.258
+[tiedDiagMVG] - prior: 0.1 minDCF: 0.262 actDCF: 0.330
+[tiedDiagMVG] - prior: 0.9 minDCF: 0.544 actDCF: 2.063
+Uncalibrated evaluation scores
+[tiedMVG] - prior: 0.5 minDCF: 0.110 actDCF: 0.202
+[tiedMVG] - prior: 0.1 minDCF: 0.207 actDCF: 0.278
+[tiedMVG] - prior: 0.9 minDCF: 0.591 actDCF: 1.338
+Uncalibrated evaluation scores
+[linear-LR] - lambda: 0.000100 p_T: 0.5 prior: 0.5 minDCF: 0.110 actDCF: 0.113
+[linear-LR] - lambda: 0.000100 p_T: 0.5 prior: 0.1 minDCF: 0.199 actDCF: 0.224
+[linear-LR] - lambda: 0.000100 p_T: 0.5 prior: 0.9 minDCF: 0.534 actDCF: 0.564
+Uncalibrated evaluation scores
+[linear-LR] - lambda: 0.000100 p_T: 0.1 prior: 0.5 minDCF: 0.110 actDCF: 0.194
+[linear-LR] - lambda: 0.000100 p_T: 0.1 prior: 0.1 minDCF: 0.197 actDCF: 0.347
+[linear-LR] - lambda: 0.000100 p_T: 0.1 prior: 0.9 minDCF: 0.534 actDCF: 0.806
+Uncalibrated evaluation scores
+[linear-LR] - lambda: 0.000100 p_T: 0.9 prior: 0.5 minDCF: 0.115 actDCF: 0.313
+[linear-LR] - lambda: 0.000100 p_T: 0.9 prior: 0.1 minDCF: 0.206 actDCF: 0.315
+[linear-LR] - lambda: 0.000100 p_T: 0.9 prior: 0.9 minDCF: 0.510 actDCF: 0.861
+unbalanced SVM
+Uncalibrated evaluation scores
+[linear-SVM] - C: 0.500000 prior: 0.5, p_T: 0.0 minDCF: 0.113 actDCF: 0.197
+[linear-SVM] - C: 0.500000 prior: 0.1, p_T: 0.0 minDCF: 0.201 actDCF: 0.473
+[linear-SVM] - C: 0.500000 prior: 0.9, p_T: 0.0 minDCF: 0.552 actDCF: 0.832
+balanced SVM
+Uncalibrated evaluation scores
+[linear-SVM] - C: 0.500000 prior: 0.5, p_T: 0.5 minDCF: 0.106 actDCF: 0.113
+[linear-SVM] - C: 0.500000 prior: 0.1, p_T: 0.5 minDCF: 0.201 actDCF: 0.282
+[linear-SVM] - C: 0.500000 prior: 0.9, p_T: 0.5 minDCF: 0.561 actDCF: 0.782
+Uncalibrated evaluation scores
+[linear-SVM] - C: 0.500000 prior: 0.5, p_T: 0.1 minDCF: 0.111 actDCF: 0.193
+[linear-SVM] - C: 0.500000 prior: 0.1, p_T: 0.1 minDCF: 0.201 actDCF: 0.473
+[linear-SVM] - C: 0.500000 prior: 0.9, p_T: 0.1 minDCF: 0.554 actDCF: 0.834
+Uncalibrated evaluation scores
+[linear-SVM] - C: 0.500000 prior: 0.5, p_T: 0.9 minDCF: 0.115 actDCF: 0.294
+[linear-SVM] - C: 0.500000 prior: 0.1, p_T: 0.9 minDCF: 0.206 actDCF: 0.218
+[linear-SVM] - C: 0.500000 prior: 0.9, p_T: 0.9 minDCF: 0.499 actDCF: 0.940
+unbalanced SVM
+Uncalibrated evaluation scores
+[quadratic-SVM] - C: 0.001000 prior: 0.5, p_T: 0.0 minDCF: 0.108 actDCF: 0.249
+[quadratic-SVM] - C: 0.001000 prior: 0.1, p_T: 0.0 minDCF: 0.199 actDCF: 0.513
+[quadratic-SVM] - C: 0.001000 prior: 0.9, p_T: 0.0 minDCF: 0.497 actDCF: 0.996
+balanced SVM
+Uncalibrated evaluation scores
+[quadratic-SVM] - C: 0.001000 prior: 0.5, p_T: 0.5 minDCF: 0.107 actDCF: 0.120
+[quadratic-SVM] - C: 0.001000 prior: 0.1, p_T: 0.5 minDCF: 0.210 actDCF: 0.321
+[quadratic-SVM] - C: 0.001000 prior: 0.9, p_T: 0.5 minDCF: 0.465 actDCF: 0.973
+Uncalibrated evaluation scores
+[quadratic-SVM] - C: 0.001000 prior: 0.5, p_T: 0.1 minDCF: 0.108 actDCF: 0.235
+[quadratic-SVM] - C: 0.001000 prior: 0.1, p_T: 0.1 minDCF: 0.201 actDCF: 0.502
+[quadratic-SVM] - C: 0.001000 prior: 0.9, p_T: 0.1 minDCF: 0.497 actDCF: 0.995
+Uncalibrated evaluation scores
+[quadratic-SVM] - C: 0.001000 prior: 0.5, p_T: 0.9 minDCF: 0.127 actDCF: 0.372
+[quadratic-SVM] - C: 0.001000 prior: 0.1, p_T: 0.9 minDCF: 0.239 actDCF: 0.299
+[quadratic-SVM] - C: 0.001000 prior: 0.9, p_T: 0.9 minDCF: 0.546 actDCF: 0.968
+unbalanced SVM
+Uncalibrated evaluation scores
+[RBF-SVM] - C: 0.500000 prior: 0.5, p_T: 0.0 minDCF: 0.113 actDCF: 0.255
+[RBF-SVM] - C: 0.500000 prior: 0.1, p_T: 0.0 minDCF: 0.212 actDCF: 0.626
+[RBF-SVM] - C: 0.500000 prior: 0.9, p_T: 0.0 minDCF: 0.531 actDCF: 0.999
+balanced SVM
+Uncalibrated evaluation scores
+[RBF-SVM] - C: 0.500000 prior: 0.5, p_T: 0.5 minDCF: 0.111 actDCF: 0.122
+[RBF-SVM] - C: 0.500000 prior: 0.1, p_T: 0.5 minDCF: 0.214 actDCF: 0.381
+[RBF-SVM] - C: 0.500000 prior: 0.9, p_T: 0.5 minDCF: 0.544 actDCF: 0.979
+Uncalibrated evaluation scores
+[RBF-SVM] - C: 0.500000 prior: 0.5, p_T: 0.1 minDCF: 0.113 actDCF: 0.251
+[RBF-SVM] - C: 0.500000 prior: 0.1, p_T: 0.1 minDCF: 0.211 actDCF: 0.622
+[RBF-SVM] - C: 0.500000 prior: 0.9, p_T: 0.1 minDCF: 0.529 actDCF: 0.999
+Uncalibrated evaluation scores
+[RBF-SVM] - C: 0.500000 prior: 0.5, p_T: 0.9 minDCF: 0.144 actDCF: 0.464
+[RBF-SVM] - C: 0.500000 prior: 0.1, p_T: 0.9 minDCF: 0.267 actDCF: 0.278
+[RBF-SVM] - C: 0.500000 prior: 0.9, p_T: 0.9 minDCF: 0.546 actDCF: 0.998
+Uncalibrated evaluation scores
+[full-GMM] - #components: 16 prior: 0.5, minDCF: 0.128 actDCF: 0.134
+[full-GMM] - #components: 16 prior: 0.1, minDCF: 0.216 actDCF: 0.246
+[full-GMM] - #components: 16 prior: 0.9, minDCF: 0.617 actDCF: 0.635
+Uncalibrated evaluation scores
+[diag-GMM] - #components: 16 prior: 0.5, minDCF: 0.137 actDCF: 0.140
+[diag-GMM] - #components: 16 prior: 0.1, minDCF: 0.240 actDCF: 0.242
+[diag-GMM] - #components: 16 prior: 0.9, minDCF: 0.592 actDCF: 0.629
+Uncalibrated evaluation scores
+[tied-GMM] - #components: 8 prior: 0.5, minDCF: 0.134 actDCF: 0.149
+[tied-GMM] - #components: 8 prior: 0.1, minDCF: 0.249 actDCF: 0.255
+[tied-GMM] - #components: 8 prior: 0.9, minDCF: 0.659 actDCF: 0.861
+PCA7 Evaluation
+Uncalibrated evaluation scores
+[fullMVG] - prior: 0.5 minDCF: 0.139 actDCF: 0.153
+[fullMVG] - prior: 0.1 minDCF: 0.293 actDCF: 0.297
+[fullMVG] - prior: 0.9 minDCF: 0.574 actDCF: 0.953
+Uncalibrated evaluation scores
+[diagMVG] - prior: 0.5 minDCF: 0.201 actDCF: 0.224
+[diagMVG] - prior: 0.1 minDCF: 0.514 actDCF: 0.567
+[diagMVG] - prior: 0.9 minDCF: 0.755 actDCF: 0.938
+Uncalibrated evaluation scores
+[tiedDiagMVG] - prior: 0.5 minDCF: 0.141 actDCF: 0.203
+[tiedDiagMVG] - prior: 0.1 minDCF: 0.257 actDCF: 0.334
+[tiedDiagMVG] - prior: 0.9 minDCF: 0.556 actDCF: 1.166
+Uncalibrated evaluation scores
+[tiedMVG] - prior: 0.5 minDCF: 0.110 actDCF: 0.202
+[tiedMVG] - prior: 0.1 minDCF: 0.208 actDCF: 0.277
+[tiedMVG] - prior: 0.9 minDCF: 0.587 actDCF: 1.338
+Calibrated evaluation scores
+[linear-LR] - lambda: 0.000100 p_T: 0.5 prior: 0.5 minDCF: 0.109 actDCF: 0.113 actDCF_calibrated: 0.112
+[linear-LR] - lambda: 0.000100 p_T: 0.5 prior: 0.1 minDCF: 0.202 actDCF: 0.224 actDCF_calibrated: 0.221
+[linear-LR] - lambda: 0.000100 p_T: 0.5 prior: 0.9 minDCF: 0.538 actDCF: 0.566 actDCF_calibrated: 0.566
+Calibrated evaluation scores
+[linear-LR] - lambda: 0.000100 p_T: 0.1 prior: 0.5 minDCF: 0.109 actDCF: 0.194 actDCF_calibrated: 0.111
+[linear-LR] - lambda: 0.000100 p_T: 0.1 prior: 0.1 minDCF: 0.197 actDCF: 0.348 actDCF_calibrated: 0.215
+[linear-LR] - lambda: 0.000100 p_T: 0.1 prior: 0.9 minDCF: 0.534 actDCF: 0.796 actDCF_calibrated: 0.578
+Calibrated evaluation scores
+[linear-LR] - lambda: 0.000100 p_T: 0.9 prior: 0.5 minDCF: 0.115 actDCF: 0.318 actDCF_calibrated: 0.116
+[linear-LR] - lambda: 0.000100 p_T: 0.9 prior: 0.1 minDCF: 0.205 actDCF: 0.320 actDCF_calibrated: 0.223
+[linear-LR] - lambda: 0.000100 p_T: 0.9 prior: 0.9 minDCF: 0.527 actDCF: 0.870 actDCF_calibrated: 0.567
+unbalanced SVM
+Calibrated evaluation scores
+[linear-SVM] - C: 0.500000 prior: 0.5, p_T: 0.0 minDCF: 0.114 actDCF: 0.197 actDCF_calibrated: 0.117
+[linear-SVM] - C: 0.500000 prior: 0.1, p_T: 0.0 minDCF: 0.203 actDCF: 0.474 actDCF_calibrated: 0.215
+[linear-SVM] - C: 0.500000 prior: 0.9, p_T: 0.0 minDCF: 0.552 actDCF: 0.846 actDCF_calibrated: 0.569
+balanced SVM
+Calibrated evaluation scores
+[linear-SVM] - C: 0.500000 prior: 0.5, p_T: 0.5 minDCF: 0.107 actDCF: 0.113 actDCF_calibrated: 0.111
+[linear-SVM] - C: 0.500000 prior: 0.1, p_T: 0.5 minDCF: 0.204 actDCF: 0.288 actDCF_calibrated: 0.222
+[linear-SVM] - C: 0.500000 prior: 0.9, p_T: 0.5 minDCF: 0.574 actDCF: 0.799 actDCF_calibrated: 0.580
+Calibrated evaluation scores
+[linear-SVM] - C: 0.500000 prior: 0.5, p_T: 0.1 minDCF: 0.113 actDCF: 0.196 actDCF_calibrated: 0.114
+[linear-SVM] - C: 0.500000 prior: 0.1, p_T: 0.1 minDCF: 0.202 actDCF: 0.475 actDCF_calibrated: 0.218
+[linear-SVM] - C: 0.500000 prior: 0.9, p_T: 0.1 minDCF: 0.553 actDCF: 0.820 actDCF_calibrated: 0.567
+Calibrated evaluation scores
+[linear-SVM] - C: 0.500000 prior: 0.5, p_T: 0.9 minDCF: 0.123 actDCF: 0.308 actDCF_calibrated: 0.125
+[linear-SVM] - C: 0.500000 prior: 0.1, p_T: 0.9 minDCF: 0.208 actDCF: 0.237 actDCF_calibrated: 0.226
+[linear-SVM] - C: 0.500000 prior: 0.9, p_T: 0.9 minDCF: 0.492 actDCF: 0.944 actDCF_calibrated: 0.529
+unbalanced SVM
+Calibrated evaluation scores
+[quadratic-SVM] - C: 0.001000 prior: 0.5, p_T: 0.0 minDCF: 0.108 actDCF: 0.249 actDCF_calibrated: 0.124
+[quadratic-SVM] - C: 0.001000 prior: 0.1, p_T: 0.0 minDCF: 0.201 actDCF: 0.513 actDCF_calibrated: 0.215
+[quadratic-SVM] - C: 0.001000 prior: 0.9, p_T: 0.0 minDCF: 0.507 actDCF: 0.995 actDCF_calibrated: 0.528
+balanced SVM
+Calibrated evaluation scores
+[quadratic-SVM] - C: 0.001000 prior: 0.5, p_T: 0.5 minDCF: 0.107 actDCF: 0.121 actDCF_calibrated: 0.112
+[quadratic-SVM] - C: 0.001000 prior: 0.1, p_T: 0.5 minDCF: 0.211 actDCF: 0.322 actDCF_calibrated: 0.223
+[quadratic-SVM] - C: 0.001000 prior: 0.9, p_T: 0.5 minDCF: 0.464 actDCF: 0.973 actDCF_calibrated: 0.482
+Calibrated evaluation scores
+[quadratic-SVM] - C: 0.001000 prior: 0.5, p_T: 0.1 minDCF: 0.107 actDCF: 0.236 actDCF_calibrated: 0.121
+[quadratic-SVM] - C: 0.001000 prior: 0.1, p_T: 0.1 minDCF: 0.201 actDCF: 0.502 actDCF_calibrated: 0.216
+[quadratic-SVM] - C: 0.001000 prior: 0.9, p_T: 0.1 minDCF: 0.516 actDCF: 0.995 actDCF_calibrated: 0.520
+Calibrated evaluation scores
+[quadratic-SVM] - C: 0.001000 prior: 0.5, p_T: 0.9 minDCF: 0.128 actDCF: 0.375 actDCF_calibrated: 0.135
+[quadratic-SVM] - C: 0.001000 prior: 0.1, p_T: 0.9 minDCF: 0.250 actDCF: 0.303 actDCF_calibrated: 0.297
+[quadratic-SVM] - C: 0.001000 prior: 0.9, p_T: 0.9 minDCF: 0.555 actDCF: 0.969 actDCF_calibrated: 0.570
+unbalanced SVM
+Calibrated evaluation scores
+[RBF-SVM] - C: 0.500000 prior: 0.5, p_T: 0.0 minDCF: 0.114 actDCF: 0.275 actDCF_calibrated: 0.125
+[RBF-SVM] - C: 0.500000 prior: 0.1, p_T: 0.0 minDCF: 0.211 actDCF: 0.642 actDCF_calibrated: 0.235
+[RBF-SVM] - C: 0.500000 prior: 0.9, p_T: 0.0 minDCF: 0.526 actDCF: 0.998 actDCF_calibrated: 0.606
+balanced SVM
+Calibrated evaluation scores
+[RBF-SVM] - C: 0.500000 prior: 0.5, p_T: 0.5 minDCF: 0.112 actDCF: 0.122 actDCF_calibrated: 0.113
+[RBF-SVM] - C: 0.500000 prior: 0.1, p_T: 0.5 minDCF: 0.214 actDCF: 0.381 actDCF_calibrated: 0.229
+[RBF-SVM] - C: 0.500000 prior: 0.9, p_T: 0.5 minDCF: 0.547 actDCF: 0.977 actDCF_calibrated: 0.566
+Calibrated evaluation scores
+[RBF-SVM] - C: 0.500000 prior: 0.5, p_T: 0.1 minDCF: 0.112 actDCF: 0.252 actDCF_calibrated: 0.115
+[RBF-SVM] - C: 0.500000 prior: 0.1, p_T: 0.1 minDCF: 0.211 actDCF: 0.621 actDCF_calibrated: 0.222
+[RBF-SVM] - C: 0.500000 prior: 0.9, p_T: 0.1 minDCF: 0.530 actDCF: 0.999 actDCF_calibrated: 0.596
+Calibrated evaluation scores
+[RBF-SVM] - C: 0.500000 prior: 0.5, p_T: 0.9 minDCF: 0.143 actDCF: 0.338 actDCF_calibrated: 0.149
+[RBF-SVM] - C: 0.500000 prior: 0.1, p_T: 0.9 minDCF: 0.262 actDCF: 0.286 actDCF_calibrated: 0.276
+[RBF-SVM] - C: 0.500000 prior: 0.9, p_T: 0.9 minDCF: 0.555 actDCF: 0.993 actDCF_calibrated: 0.567
+Calibrated evaluation scores
+[full-GMM] - #components: 16 prior: 0.5, minDCF: 0.127 actDCF: 0.131 actDCF_calibrated: 0.130
+[full-GMM] - #components: 16 prior: 0.1, minDCF: 0.223 actDCF: 0.247 actDCF_calibrated: 0.253
+[full-GMM] - #components: 16 prior: 0.9, minDCF: 0.618 actDCF: 0.649 actDCF_calibrated: 0.661
+Calibrated evaluation scores
+[diag-GMM] - #components: 4 prior: 0.5, minDCF: 0.140 actDCF: 0.147 actDCF_calibrated: 0.147
+[diag-GMM] - #components: 4 prior: 0.1, minDCF: 0.275 actDCF: 0.287 actDCF_calibrated: 0.288
+[diag-GMM] - #components: 4 prior: 0.9, minDCF: 0.620 actDCF: 0.691 actDCF_calibrated: 0.647
+Calibrated evaluation scores
+[tied-GMM] - #components: 8 prior: 0.5, minDCF: 0.135 actDCF: 0.152 actDCF_calibrated: 0.141
+[tied-GMM] - #components: 8 prior: 0.1, minDCF: 0.248 actDCF: 0.258 actDCF_calibrated: 0.280
+[tied-GMM] - #components: 8 prior: 0.9, minDCF: 0.660 actDCF: 0.864 actDCF_calibrated: 0.692
+End of the program!

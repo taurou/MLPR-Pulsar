@@ -222,7 +222,6 @@ def GMMBinaryclassification(DTR, LTR, DTE, algorithm_iterations, LBG_mode, alpha
 
     return llr.ravel(), predicted_L.ravel() #return scores and labels
 
-#TODO move to plots.py if necessary
 def plotGMMNormalDensityOverNormalizedHistogram(dataset, gmm):
     # Function used to plot the computed normal density over the normalized histogram
     dataset = dataset.flatten()

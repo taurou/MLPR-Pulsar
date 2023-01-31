@@ -48,5 +48,5 @@ def compute_accuracy_error(predicted_labels, true_labels): #Lp is the predicted 
     Success = sum(BooleanPredictionResults)
     Accuracy = Success / len(true_labels)
     Error = 1 - Accuracy
-    #print("Accuracy: ", Accuracy, "Error: ", Error)   #TODO correct rounding 
+    #print("Accuracy: ", Accuracy, "Error: ", Error)  
     return Accuracy, Error
